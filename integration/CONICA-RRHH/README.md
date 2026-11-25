@@ -8,7 +8,7 @@ Este directorio contiene las versiones de referencia que se aplicaron en la app.
 
 | Archivo del repo | Versión propuesta aquí | Qué hace |
 |---|---|---|
-| `package.json` | `package.json` | Añade `avatar-profile-kit` como dependencia local `file:../avatar-profile-kit` |
+| `package.json` | `package.json` | Añade `avatar-profile-kit` como dependencia git HTTPS; en local se usa `npm link` |
 | `next.config.ts` | ver fragmento abajo | `transpilePackages` + `turbopack.root` para resolver el paquete hermano |
 | `src/lib/avatar.ts` | `src/lib/avatar.ts` | Adaptador: re-exporta validación/rutas/iniciales del paquete manteniendo la API actual |
 | `src/features/avatars/components/profile-modal.tsx` | `src/features/avatars/components/profile-modal.tsx` | Usa `Avatar` y `ProfileModal` del paquete; conserva `saveAvatar` del repo |
@@ -39,7 +39,7 @@ npm.cmd install
 npm.cmd run check
 ```
 
-- ✅ `npm install` creó `node_modules/avatar-profile-kit` como junction a `C:\Proyecto predeterminado\avatar-profile-kit`.
+- ✅ La app instala el kit desde `git+https://github.com/Lions16/avatar-profile-kit.git#main`; una instalación limpia tipo Vercel (`npm ci` en un directorio sin el kit hermano) compila y genera `dist/` mediante `prepare`.
 - ✅ `npm run check` de la app: 43/43 tests, build de Next 16.4.6 y `npm audit --omit=dev` sin vulnerabilidades.
 - ✅ `npm run check` del kit: 24/24 tests.
 - ✅ Propagación comprobada con un export temporal: apareció en la app tras recompilar el kit y desapareció al retirarlo.

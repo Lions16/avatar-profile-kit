@@ -1,6 +1,6 @@
 # avatar-profile-kit
 
-Módulo **independiente** para avatares privados, diálogo de perfil y logout único. Vive fuera del repo de la app (`C:\Proyecto predeterminado\avatar-profile-kit`) y no contiene código de `CONICA-RRHH`; la app lo importa como dependencia local. Se puede enlazar a cualquier proyecto Next.js + Supabase o publicar como paquete interno.
+Módulo **independiente** para avatares privados, diálogo de perfil y logout único. Vive en su propio repo (`https://github.com/Lions16/avatar-profile-kit`) y no contiene código de `CONICA-RRHH`; la app lo importa como dependencia git. Para desarrollo local se enlaza con `npm link`. Se puede consumir desde cualquier proyecto Next.js + Supabase.
 
 Modelo genérico de dos dueños:
 
@@ -18,7 +18,7 @@ No hay nombres de roles hardcodeados en la UI: `internal`/`member` son claves ne
 - ✅ React: `Avatar`, `useAvatarEditor`, `ProfileModal`, `ProfileDialog`, `InternalProfileDialog`, `MemberProfileDialog`, instalación PWA.
 - ✅ SQL parametrizable: columnas, bucket + policies + helpers, RPC.
 - ✅ Tests de lógica y de permisos con PGlite (SQL real, solo Auth se simula).
-- ✅ **Integrado en `CONICA-RRHH`**: dependencia local `file:../avatar-profile-kit`, wrappers aplicados y `npm run check` de la app en verde (43 tests, build y auditoría).
+- ✅ **Integrado en `CONICA-RRHH`**: dependencia git `git+https://github.com/Lions16/avatar-profile-kit.git#main`, wrappers aplicados y `npm run check` de la app en verde (43 tests, build y auditoría). `npm link` mantiene la propagación inmediata en local.
 - ✅ PWA publicada en la app (`public/manifest.webmanifest`, `public/sw.js`, iconos) y WebP permitido en el bucket `connect-personnel` mediante la migración `202611251400_avatar_webp_mime.sql`.
 
 ## Verificación del paquete
@@ -129,24 +129,28 @@ Para el perfil `member`, el mismo componente con `owner.kind = "member"` y `owne
 | Subir/ver/quitar foto y RPCs | ✅ Migración `202611250030_avatars.sql` |
 | WebP en `connect-personnel` | ✅ Migración `202611251400_avatar_webp_mime.sql` |
 | Manifest, service worker e iconos | ✅ Publicados en `public/` y registrados en `src/app/layout.tsx` |
-| Dependencia local del kit | ✅ `file:../avatar-profile-kit`; `npm install` creó un junction |
+| Dependencia del kit | ✅ `git+https://github.com/Lions16/avatar-profile-kit.git#main`; Vercel la instala desde GitHub |
+| Desarrollo local | ✅ `npm link ../avatar-profile-kit` crea el junction para propagación inmediata |
 | Wrappers del kit en la app | ✅ `src/lib/avatar.ts`, `profile-modal.tsx`, `my-profile.tsx` y `layout.tsx` |
 | Turbopack | ✅ `transpilePackages` + `turbopack.root` = directorio contenedor |
 | Verificación final | ✅ kit 24/24 y app 43/43; build y `npm audit` limpios |
+
+> `file:../avatar-profile-kit` funcionaba en local pero **no en Vercel**: cada repo se clona solo, `../avatar-profile-kit` no existe y `npm ci` deja un junction roto. Por eso se migró a dependencia git.
 
 Se probó la propagación con un export temporal en `src/core/index.ts`: tras `npm run build` en el kit, la app importó el nuevo valor **sin reinstalar ni reiniciar**; al retirarlo, desapareció. El marcador ya fue eliminado.
 
 ### 4.1 Cómo se reflejan los cambios en la app
 
-- `node_modules/avatar-profile-kit` es un **junction** a la carpeta del kit: los cambios en `dist/` son visibles de inmediato.
-- Los cambios en `src/` requieren `npm run build` en el kit. Eso ya lo hace `prepare` al instalar; para desarrollo usa `npm run dev:watch` en una terminal.
+- En local, `npm link ../avatar-profile-kit` crea un **junction** en `node_modules`: los cambios en `dist/` son visibles de inmediato.
+- Los cambios en `src/` requieren `npm run build` en el kit. El script `prepare` ya lo hace al instalar desde Git; para desarrollo usa `npm run dev:watch` en una terminal.
+- Para actualizar la versión desplegada: haz commit/push en este repo y luego `npm install` (o redeploy) en cada app consumidora.
 - Si npm bloquea los scripts de instalación: `npm install-scripts approve avatar-profile-kit`.
 - Después de cambiar estilos, el build vuelve a copiar `src/react/styles.css` a `dist/react/styles.css`.
 
 ### 4.2 Para integrar el siguiente proyecto
 
-1. Ubica el kit como proyecto hermano (o ajusta la ruta `file:`).
-2. Añade la dependencia y dos líneas en `next.config.ts`; `turbopack.root` debe ser el **padre común** de la app y del kit, porque Turbopack no resuelve archivos fuera de esa raíz:
+1. Añade la dependencia git y, solo en local, ejecuta `npm link ../avatar-profile-kit`.
+2. Añade dos líneas en `next.config.ts`; `turbopack.root` debe ser el **padre común** de la app y del kit, porque Turbopack no resuelve archivos fuera de esa raíz:
 
    ```ts
    const config: NextConfig = {
