@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>avatar-profile-kit · Visual del estado del módulo</title>
+<style>
+  :root {
+    --bg: #f5f7fb; --ink: #18233a; --muted: #64748b; --line: #e2e8f0;
+    --card: #ffffff; --blue: #4f46e5; --teal: #0d9488; --violet: #7c3aed;
+    --amber: #d97706; --green: #059669; --red: #dc2626;
+    --shadow: 0 10px 30px rgba(15, 23, 42, .07);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink); background: radial-gradient(1200px 600px at 10% -10%, #e8ecff 0%, transparent 60%), var(--bg);
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 36px 22px 60px; }
+  header { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; justify-content: space-between; margin-bottom: 26px; }
+  h1 { margin: 0; font-size: clamp(28px, 4vw, 44px); letter-spacing: -.03em; }
+  h1 span { color: var(--blue); }
+  .sub { color: var(--muted); margin: 6px 0 0; font-size: 15px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 7px 13px; font-size: 12px; font-weight: 700; box-shadow: var(--shadow); }
+  .chip.ok { color: var(--green); border-color: #a7f3d0; background: #ecfdf5; }
+  .chip.warn { color: var(--amber); border-color: #fde68a; background: #fffbeb; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); }
+  .stat b { display: block; font-size: 26px; letter-spacing: -.03em; }
+  .stat small { color: var(--muted); font-size: 12px; }
+  h2 { font-size: 19px; margin: 34px 0 14px; letter-spacing: -.01em; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 14px; }
+  .layer { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; box-shadow: var(--shadow); }
+  .layer h3 { margin: 0 0 3px; font-size: 15px; }
+  .layer .desc { color: var(--muted); font-size: 12px; margin-bottom: 12px; min-height: 34px; }
+  .node {
+    display: block; width: 100%; text-align: left; border: 1px solid var(--line); background: #fbfcff;
+    border-radius: 10px; padding: 8px 10px; margin-bottom: 7px; cursor: pointer; font: inherit; font-size: 12.5px;
+    transition: transform .12s ease, border-color .12s ease, background .12s ease;
+  }
+  .node:hover { transform: translateX(3px); border-color: var(--blue); background: #f3f4ff; }
+  .node.active { border-color: var(--blue); background: #eef2ff; font-weight: 700; }
+  .node code { color: var(--violet); font-size: 11px; }
+  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 7px; background: var(--green); }
+  .dot.pending { background: var(--amber); }
+  .panel { margin-top: 14px; background: #111827; color: #e5e7eb; border-radius: 16px; padding: 18px 20px; min-height: 96px; }
+  .panel h4 { margin: 0 0 6px; color: #a5b4fc; font-size: 14px; }
+  .panel p { margin: 0; font-size: 13px; color: #cbd5e1; }
+  .panel .meta { margin-top: 8px; font-size: 11px; color: #94a3b8; }
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; }
+  .step { flex: 1 1 155px; background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--blue); border-radius: 12px; padding: 13px; box-shadow: var(--shadow); }
+  .step:nth-child(2) { border-top-color: var(--teal); }
+  .step:nth-child(3) { border-top-color: var(--violet); }
+  .step:nth-child(4) { border-top-color: var(--blue); }
+  .step:nth-child(5) { border-top-color: var(--green); }
+  .step b { font-size: 13px; display: block; }
+  .step small { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
+  .arrow { align-self: center; color: var(--blue); font-weight: 800; }
+  .owners { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .owner { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); }
+  .owner b { font-size: 16px; }
+  .owner .tag { font-size: 11px; color: var(--blue); background: #eef2ff; padding: 3px 8px; border-radius: 999px; margin-left: 8px; }
+  .owner path { display: block; margin-top: 10px; background: #0f172a; color: #a7f3d0; padding: 10px; border-radius: 8px; font: 11px ui-monospace, monospace; overflow-wrap: anywhere; }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); font-size: 13px; }
+  th, td { text-align: left; padding: 10px 13px; border-bottom: 1px solid var(--line); }
+  th { background: #f8fafc; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  .checklist { display: grid; gap: 8px; }
+  .check { display: flex; gap: 10px; align-items: flex-start; background: var(--card); border: 1px solid var(--line); border-radius: 11px; padding: 11px 14px; cursor: pointer; font-size: 13px; }
+  .check input { margin-top: 3px; accent-color: var(--blue); }
+  .check.done { background: #f0fdf4; border-color: #bbf7d0; color: #166534; text-decoration: line-through; opacity: .8; }
+  footer { margin-top: 34px; color: var(--muted); font-size: 11px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1><span>avatar-profile-kit</span></h1>
+      <p class="sub">Visual del trabajo realizado · módulo independiente para Next.js + Supabase</p>
+    </div>
+    <div class="chips">
+      <span class="chip">v0.1.0</span>
+      <span class="chip ok">✅ Paquete listo</span>
+      <span class="chip warn">⏳ Sin integrar en la app</span>
+    </div>
+  </header>
+
+  <section class="stats">
+    <div class="stat"><b>5</b><small>capas funcionales</small></div>
+    <div class="stat"><b>2</b><small>tipos de dueño</small></div>
+    <div class="stat"><b>3</b><small>plantillas SQL</small></div>
+    <div class="stat"><b>2</b><small>suites de tests</small></div>
+    <div class="stat"><b>0</b><small>archivos de la app tocados</small></div>
+  </section>
+
+  <h2>Mapa del módulo <span style="font-size:12px;color:var(--muted);font-weight:400">— haz clic en un bloque para ver el detalle</span></h2>
+  <div class="grid" id="layers"></div>
+  <div class="panel" id="panel">
+    <h4>Selecciona un bloque</h4>
+    <p>Este panel muestra qué hace cada pieza, en qué archivos vive y si está terminada o pendiente de integración.</p>
+    <div class="meta">Estado global: core, adaptadores, UI, SQL y tests completados · integración posterior y explícita.</div>
+  </div>
+
+  <h2>Flujo de una subida de avatar</h2>
+  <div class="flow">
+    <div class="step"><b>1. Config</b><small>avatar-profile.config.json define bucket, límites, tablas y roles.</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>2. SQL</b><small>3 plantillas renderizan columnas, bucket/policies y RPC.</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>3. Core + Supabase</b><small>Valida JPG/PNG/WebP ≤2 MB, construye la ruta y firma la URL.</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>4. React</b><small>Avatar, useAvatarEditor y el modal con logout y PWA.</small></div>
+    <span class="arrow">→</span>
+    <div class="step"><b>5. Guardar</b><small>La RPC apunta avatar_path; se borran el objeto anterior o el pendiente.</small></div>
+  </div>
+
+  <h2>Los dos dueños (sin nombres de roles en la UI)</h2>
+  <div class="owners">
+    <div class="owner">
+      <b>internal</b><span class="tag">cuenta interna</span>
+      <p style="color:var(--muted);font-size:13px">Dueño <code>auth_user_id</code> sobre <code>platform_usernames</code>. Se abre desde “Mi perfil”.</p>
+      <path>&lt;org&gt;/internal/&lt;auth_user_id&gt;/avatar/&lt;uuid&gt;.&lt;ext&gt;</path>
+    </div>
+    <div class="owner">
+      <b>member</b><span class="tag">perfil de negocio</span>
+      <p style="color:var(--muted);font-size:13px">Dueño <code>employee_id</code> vía <code>user_employee_links</code>. Se abre desde su propio diálogo.</p>
+      <path>&lt;org&gt;/member/&lt;employee_id&gt;/avatar/&lt;uuid&gt;.&lt;ext&gt;</path>
+    </div>
+  </div>
+  <p style="color:var(--muted);font-size:12px">El preset <code>connect-personnel</code> usa <code>pathLayout: "owner"</code>: <code>&lt;org&gt;/&lt;owner&gt;/avatar/&lt;uuid&gt;.&lt;ext&gt;</code>.</p>
+
+  <h2>Checklist de integración futura <span style="font-size:12px;color:var(--muted);font-weight:400">— marca lo que ya se haya aplicado en la app</span></h2>
+  <div class="checklist" id="checklist"></div>
+
+  <h2>Criterios cubiertos por el módulo</h2>
+  <table>
+    <thead><tr><th>Criterio</th><th>Dónde</th></tr></thead>
+    <tbody>
+      <tr><td>Subir / ver / quitar foto en ambos perfiles</td><td><code>useAvatarEditor</code> + adaptadores + RPC</td></tr>
+      <tr><td>Iniciales legibles sin foto</td><td><code>getAvatarInitials</code> + <code>Avatar</code></td></tr>
+      <tr><td>Logout dentro del modal</td><td><code>ProfileModal</code> (la app debe retirar el botón del header)</td></tr>
+      <tr><td>≤ 2 MB, JPG/PNG/WebP</td><td>validación TS + <code>storage.buckets</code> + policies</td></tr>
+      <tr><td>Bottom sheet con safe-area e inputs de 16 px</td><td><code>src/react/styles.css</code></td></tr>
+      <tr><td>Sin pago, estado activo ni org_id en la UI</td><td>tipos de <code>AvatarOwner</code></td></tr>
+    </tbody>
+  </table>
+
+  <footer>Generado localmente desde el estado actual de <code>avatar-profile-kit</code> · sin modificar la app destino · noviembre 2026</footer>
+</div>
+
+<script>
+const DATA = [
+  { layer: "Configuración", desc: "Un único JSON gira todo el paquete: bucket, rutas, tablas, roles y auditoría.", nodes: [
+    { name: "avatar-profile.config.json", files: "avatar-profile.config.json", done: true, detail: "Preset propio: bucket connect-avatars y ruta con segmento de rol (internal|member)." },
+    { name: "avatar-profile.connect-personnel.config.json", files: "avatar-profile.connect-personnel.config.json", done: true, detail: "Preset compatible con CONNECT: bucket connect-personnel, pathLayout owner y roles admin/hr." },
+    { name: "config.ts / types.ts", files: "src/core/config.ts, src/core/types.ts", done: true, detail: "Validación y tipado de la configuración. AvatarOwner sólo expone kind, ids y nombre." }
+  ]},
+  { layer: "Core puro", desc: "Sin dependencias de React ni Supabase: validación, rutas, iniciales y errores.", nodes: [
+    { name: "validation.ts", files: "src/core/validation.ts", done: true, detail: "Comprueba MIME JPG/PNG/WebP y tamaño máximo de 2 MB." },
+    { name: "path.ts", files: "src/core/path.ts", done: true, detail: "Construye y valida <org>/<internal|member>/<owner>/avatar/<uuid>.<ext>." },
+    { name: "errors.ts", files: "src/core/errors.ts", done: true, detail: "Errores tipados compartidos por core, adaptadores y UI." }
+  ]},
+  { layer: "Adaptadores Supabase", desc: "Storage privado, URL firmada y repositorio con RPC de propiedad.", nodes: [
+    { name: "storage.ts", files: "src/supabase/storage.ts", done: true, detail: "Subida al bucket privado, resolución de URL firmada y renovación antes del caducado." },
+    { name: "repository.ts", files: "src/supabase/repository.ts", done: true, detail: "Escribe avatar_path únicamente a través de apk_set_avatar_path." },
+    { name: "client.ts", files: "src/supabase/client.ts", done: true, detail: "Creación del cliente a partir del cliente Supabase que ya tenga la app." }
+  ]},
+  { layer: "React + PWA", desc: "Componentes del diálogo, editor de avatar, logout e instalación PWA.", nodes: [
+    { name: "Avatar.tsx / useAvatar.ts", files: "src/react/Avatar.tsx, src/react/useAvatar.ts", done: true, detail: "Muestra imagen firmada o iniciales; gestiona upload/remove/save/discard." },
+    { name: "ProfileModal.tsx", files: "src/react/ProfileModal.tsx", done: true, detail: "Bottom sheet con safe-area, logout rojo arriba a la derecha y confirmación si hay cambios sin guardar." },
+    { name: "ProfileDialog.tsx", files: "src/react/ProfileDialog.tsx", done: true, detail: "Contenedor reutilizable; variantes InternalProfileDialog y MemberProfileDialog cambian sólo el título." },
+    { name: "PwaInstall.tsx / pwa/", files: "src/react/PwaInstall.tsx, src/pwa/", done: true, detail: "Botón “Instalar aplicación” sólo cuando dispara beforeinstallprompt; plantilla de manifest e install.ts." },
+    { name: "styles.css", files: "src/react/styles.css", done: true, detail: "Modal bottom sheet con safe-area, inputs de 16 px y botones de 44 px mínimos." }
+  ]},
+  { layer: "SQL parametrizable", desc: "Plantillas renderizadas desde el JSON; nunca se escribe directo en la app.", nodes: [
+    { name: "001_columns.sql.tpl", files: "sql/001_columns.sql.tpl", done: true, detail: "Añade las columnas avatar_path configurables y helpers de propiedad." },
+    { name: "002_bucket_and_policies.sql.tpl", files: "sql/002_bucket_and_policies.sql.tpl", done: true, detail: "Bucket privado con límite/MIME y policies select/insert/update/delete sobre la carpeta propia." },
+    { name: "003_rpc.sql.tpl", files: "sql/003_rpc.sql.tpl", done: true, detail: "RPC security definer con search_path vacío: valida pertenencia, ruta y existencia del perfil. Sin update directo." },
+    { name: "render-sql.mts", files: "scripts/render-sql.mts", done: true, detail: "npm run sql:render -- --config <json> --out <carpeta>; por stdout si no se da --out." }
+  ]},
+  { layer: "Tests y verificación", desc: "Lógica pura y permisos SQL reales con PGlite; Auth se simula.", nodes: [
+    { name: "core.test.ts", files: "tests/core.test.ts", done: true, detail: "Casos de validación, rutas, iniciales y configuración." },
+    { name: "permissions.test.ts", files: "tests/permissions.test.ts", done: true, detail: "Policies y RPC ejecutados sobre SQL real con PGlite." },
+    { name: "npm run check", files: "package.json", done: true, detail: "typecheck + tests + build (tsc y copia de assets) en un solo comando." }
+  ]},
+  { layer: "Integración (pendiente)", desc: "Trabajo posterior y explícito en la app destino; este paquete no lo hace.", nodes: [
+    { name: "Botón “Mi perfil” → InternalProfileDialog", files: "app destino", done: false, detail: "Crear el punto de entrada en la cuenta interna con ownerId = auth_user_id." },
+    { name: "Diálogo del rol → MemberProfileDialog", files: "app destino", done: false, detail: "ownerId = employee_id; abrir desde su propio diálogo." },
+    { name: "Mover logout al modal", files: "app destino", done: false, detail: "Retirar el botón del header y el <form action={signOut}> del layout." },
+    { name: "Revisar y migrar SQL", files: "app destino", done: false, detail: "Renderizar a carpeta temporal, revisar y decidir cuándo migrar." }
+  ]}
+];
+
+const CHECKS = [
+  "Copiar o publicar el paquete e instalarlo en la app destino.",
+  "Renderizar SQL a una carpeta temporal, revisarlo y decidir la migración.",
+  "Crear el botón “Mi perfil” que abra InternalProfileDialog.",
+  "Crear el diálogo del rol que abra MemberProfileDialog con employee_id.",
+  "Mover el logout del header al modal y quitar el <form action={signOut}>.",
+  "Añadir el manifest/service worker de la plantilla PWA.",
+  "Ejecutar npm run check de la app y los tests del paquete."
+];
+
+const layers = document.getElementById('layers');
+const panel = document.getElementById('panel');
+
+DATA.forEach(group => {
+  const card = document.createElement('div');
+  card.className = 'layer';
+  const title = document.createElement('h3');
+  title.textContent = group.layer;
+  const desc = document.createElement('div');
+  desc.className = 'desc';
+  desc.textContent = group.desc;
+  card.append(title, desc);
+  group.nodes.forEach(node => {
+    const btn = document.createElement('button');
+    btn.className = 'node';
+    btn.innerHTML = '<span class="dot' + (node.done ? '' : ' pending') + '"></span>' + node.name + ' <code>' + node.files.split(',')[0] + '</code>';
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+      btn.classList.add('active');
+      panel.innerHTML = '<h4>' + node.name + '</h4><p>' + node.detail + '</p><div class="meta">Archivos: ' + node.files + ' · Estado: ' + (node.done ? 'completado' : 'pendiente de integración') + '</div>';
+    });
+    card.appendChild(btn);
+  });
+  layers.appendChild(card);
+});
+
+const list = document.getElementById('checklist');
+CHECKS.forEach((text, i) => {
+  const label = document.createElement('label');
+  label.className = 'check';
+  const cb = document.createElement('input');
+  cb.type = 'checkbox';
+  cb.dataset.i = i;
+  const saved = localStorage.getItem('apk-check-' + i) === '1';
+  cb.checked = saved;
+  if (saved) label.classList.add('done');
+  cb.addEventListener('change', () => {
+    label.classList.toggle('done', cb.checked);
+    localStorage.setItem('apk-check-' + i, cb.checked ? '1' : '0');
+  });
+  label.append(cb, document.createTextNode(text));
+  list.appendChild(label);
+});
+</script>
+</body>
+</html>

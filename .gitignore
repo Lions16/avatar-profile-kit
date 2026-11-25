@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+
+# Artefactos intermedios del análisis; se conservan solo los grafos finales.
+.ua/.trash-*/
+.ua/intermediate/
+.ua/tmp/

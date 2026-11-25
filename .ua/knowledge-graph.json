@@ -1,0 +1,2485 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "avatar-profile-kit",
+    "languages": [
+      "css",
+      "html",
+      "javascript",
+      "json",
+      "markdown",
+      "mts",
+      "tpl",
+      "txt",
+      "typescript",
+      "webmanifest"
+    ],
+    "frameworks": [
+      "React",
+      "Supabase"
+    ],
+    "description": "Módulo reutilizable de avatares privados, diálogo de perfil y logout para Next.js + Supabase",
+    "analyzedAt": "2026-11-25T06:28:16.721Z",
+    "gitCommitHash": "no-git-52697adf11af"
+  },
+  "nodes": [
+    {
+      "id": "file:src/core/config.ts",
+      "type": "file",
+      "name": "config.ts",
+      "filePath": "src/core/config.ts",
+      "summary": "Define y valida la configuración central del módulo de avatares: tablas, columnas, roles y rutas SQL, con comprobaciones de seguridad que garantizan identificadores seguros para SQL.",
+      "tags": [
+        "config",
+        "validation",
+        "sql-safety",
+        "factory",
+        "tested"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Usa expresiones regulares estrictas junto a qualifiedTable para asegurar que ningún identificador controlado por el usuario llegue sin validar al SQL generado."
+    },
+    {
+      "id": "file:src/core/path.ts",
+      "type": "file",
+      "name": "path.ts",
+      "filePath": "src/core/path.ts",
+      "summary": "Construye, analiza y valida las rutas de almacenamiento de los avatares y genera las iniciales a partir del nombre del usuario para usarlas como respaldo.",
+      "tags": [
+        "utility",
+        "path",
+        "validation",
+        "storage",
+        "regex",
+        "tested"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Combina expresiones regulares con crypto.randomUUID de globalThis para producir rutas únicas y predecibles de forma multiplataforma."
+    },
+    {
+      "id": "file:src/core/types.ts",
+      "type": "file",
+      "name": "types.ts",
+      "filePath": "src/core/types.ts",
+      "summary": "Define los tipos compartidos del núcleo —propietarios de avatar, configuración SQL y formas de datos— consumidos por las capas React y Supabase.",
+      "tags": [
+        "type-definition",
+        "types",
+        "shared",
+        "config"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Archivo puramente declarativo: uniones, interfaces y const assertions sin lógica en tiempo de ejecución."
+    },
+    {
+      "id": "file:src/core/validation.ts",
+      "type": "file",
+      "name": "validation.ts",
+      "filePath": "src/core/validation.ts",
+      "summary": "Valida archivos de avatar comprobando los tipos MIME permitidos y el tamaño máximo, y resuelve la extensión de archivo correspondiente.",
+      "tags": [
+        "validation",
+        "utility",
+        "file-upload",
+        "security",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/sql/render.ts",
+      "type": "file",
+      "name": "render.ts",
+      "filePath": "src/sql/render.ts",
+      "summary": "Renderiza plantillas SQL sustituyendo marcadores por valores de configuración validados, para generar esquemas, triggers y políticas del módulo de avatares.",
+      "tags": [
+        "sql",
+        "template",
+        "rendering",
+        "security",
+        "utility",
+        "tested"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Sustituye marcadores {{clave}} y detecta los residuales para asegurar que no queden tokens sin resolver en el SQL generado."
+    },
+    {
+      "id": "file:tests/core.test.ts",
+      "type": "file",
+      "name": "core.test.ts",
+      "filePath": "tests/core.test.ts",
+      "summary": "Pruebas unitarias del núcleo que cubren la normalización y validación de la configuración, la construcción de rutas de avatar y las reglas de validación de archivos.",
+      "tags": [
+        "test",
+        "unit-test",
+        "core",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/permissions.test.ts",
+      "type": "file",
+      "name": "permissions.test.ts",
+      "filePath": "tests/permissions.test.ts",
+      "summary": "Pruebas de integración de permisos y políticas RLS que verifican qué avatares son visibles para distintos usuarios y roles sobre la base de datos.",
+      "tags": [
+        "test",
+        "integration-test",
+        "permissions",
+        "rls",
+        "database"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Simula el comportamiento RLS de Supabase con una base SQLite en memoria, sembrando datos y alternando el usuario activo entre pruebas."
+    },
+    {
+      "id": "function:src/core/config.ts:assertIdentifier",
+      "type": "function",
+      "name": "assertIdentifier",
+      "filePath": "src/core/config.ts",
+      "lineRange": [
+        62,
+        64
+      ],
+      "summary": "Afirma que un valor es un identificador SQL válido y lanza un error descriptivo si no coincide con el patrón permitido.",
+      "tags": [
+        "validation",
+        "assertion",
+        "sql-safety"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/core/config.ts:qualifiedTable",
+      "type": "function",
+      "name": "qualifiedTable",
+      "filePath": "src/core/config.ts",
+      "lineRange": [
+        67,
+        74
+      ],
+      "summary": "Compone un nombre de tabla calificado por esquema y valida cada una de sus partes como identificador seguro.",
+      "tags": [
+        "utility",
+        "sql-safety",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/core/config.ts:defineAvatarConfig",
+      "type": "function",
+      "name": "defineAvatarConfig",
+      "filePath": "src/core/config.ts",
+      "lineRange": [
+        76,
+        96
+      ],
+      "summary": "Fábrica que normaliza la configuración de entrada con los valores por defecto y valida que sea segura para SQL antes de devolverla.",
+      "tags": [
+        "factory",
+        "config",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/core/config.ts:assertSqlSafeConfig",
+      "type": "function",
+      "name": "assertSqlSafeConfig",
+      "filePath": "src/core/config.ts",
+      "lineRange": [
+        98,
+        140
+      ],
+      "summary": "Valida que todos los identificadores, tablas, columnas, roles y expresiones de la configuración sean seguros para incrustarlos en sentencias SQL.",
+      "tags": [
+        "validation",
+        "security",
+        "sql-safety"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/core/config.ts:configFromJson",
+      "type": "function",
+      "name": "configFromJson",
+      "filePath": "src/core/config.ts",
+      "lineRange": [
+        142,
+        145
+      ],
+      "summary": "Construye una configuración de avatar a partir de un valor JSON, comprobando que sea un objeto antes de normalizarla.",
+      "tags": [
+        "factory",
+        "serialization",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/core/path.ts:buildAvatarPath",
+      "type": "function",
+      "name": "buildAvatarPath",
+      "filePath": "src/core/path.ts",
+      "lineRange": [
+        20,
+        35
+      ],
+      "summary": "Genera una ruta de almacenamiento segura y única para un avatar a partir de la carpeta, el tipo de propietario, su identificador y la extensión MIME.",
+      "tags": [
+        "utility",
+        "path",
+        "storage"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/core/path.ts:parseAvatarPath",
+      "type": "function",
+      "name": "parseAvatarPath",
+      "filePath": "src/core/path.ts",
+      "lineRange": [
+        37,
+        61
+      ],
+      "summary": "Analiza una ruta de avatar y extrae sus componentes, admitiendo tanto formatos con tipo de propietario como formatos de solo propietario.",
+      "tags": [
+        "utility",
+        "parsing",
+        "regex"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/core/path.ts:isAvatarPath",
+      "type": "function",
+      "name": "isAvatarPath",
+      "filePath": "src/core/path.ts",
+      "lineRange": [
+        63,
+        78
+      ],
+      "summary": "Comprueba si una ruta corresponde a un avatar válido según la carpeta y las extensiones permitidas por la configuración.",
+      "tags": [
+        "validation",
+        "path",
+        "regex"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/core/path.ts:avatarPathRegex",
+      "type": "function",
+      "name": "avatarPathRegex",
+      "filePath": "src/core/path.ts",
+      "lineRange": [
+        81,
+        88
+      ],
+      "summary": "Construye una expresión regular que hace coincidir las rutas de avatar válidas según la configuración de carpetas y extensiones.",
+      "tags": [
+        "utility",
+        "regex",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/core/path.ts:getAvatarInitials",
+      "type": "function",
+      "name": "getAvatarInitials",
+      "filePath": "src/core/path.ts",
+      "lineRange": [
+        90,
+        96
+      ],
+      "summary": "Deriva hasta dos iniciales en mayúsculas a partir del nombre de un usuario para mostrarlas como avatar de respaldo.",
+      "tags": [
+        "utility",
+        "formatting",
+        "avatar"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/core/validation.ts:isAllowedAvatarMime",
+      "type": "function",
+      "name": "isAllowedAvatarMime",
+      "filePath": "src/core/validation.ts",
+      "lineRange": [
+        11,
+        14
+      ],
+      "summary": "Indica si un tipo MIME figura en la lista de tipos permitidos por la configuración del avatar.",
+      "tags": [
+        "validation",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/core/validation.ts:avatarExtension",
+      "type": "function",
+      "name": "avatarExtension",
+      "filePath": "src/core/validation.ts",
+      "lineRange": [
+        16,
+        19
+      ],
+      "summary": "Resuelve la extensión de archivo correspondiente a un tipo MIME según la configuración.",
+      "tags": [
+        "utility",
+        "mapping"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/core/validation.ts:validateAvatarFile",
+      "type": "function",
+      "name": "validateAvatarFile",
+      "filePath": "src/core/validation.ts",
+      "lineRange": [
+        25,
+        35
+      ],
+      "summary": "Valida que un archivo de avatar no supere el tamaño máximo y tenga un tipo MIME permitido, lanzando errores descriptivos en caso contrario.",
+      "tags": [
+        "validation",
+        "file-upload",
+        "security"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/sql/render.ts:buildTemplateValues",
+      "type": "function",
+      "name": "buildTemplateValues",
+      "filePath": "src/sql/render.ts",
+      "lineRange": [
+        23,
+        91
+      ],
+      "summary": "Construye el mapa de valores de configuración para sustituir marcadores en las plantillas SQL, incluyendo tablas, columnas, triggers y políticas.",
+      "tags": [
+        "sql",
+        "template",
+        "config",
+        "security"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/sql/render.ts:renderSqlTemplates",
+      "type": "function",
+      "name": "renderSqlTemplates",
+      "filePath": "src/sql/render.ts",
+      "lineRange": [
+        100,
+        112
+      ],
+      "summary": "Lee las plantillas SQL de un directorio, sustituye sus marcadores por los valores de configuración y devuelve el SQL resultante.",
+      "tags": [
+        "sql",
+        "template",
+        "rendering",
+        "file-io"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/core/errors.ts",
+      "type": "file",
+      "name": "errors.ts",
+      "filePath": "src/core/errors.ts",
+      "summary": "Define el union type de códigos de error del kit, la clase AvatarKitError que preserva la causa original y el helper errorMessage para extraer mensajes legibles.",
+      "tags": [
+        "manejo-de-errores",
+        "utilidad",
+        "core",
+        "tipos"
+      ],
+      "complexity": "simple",
+      "languageNotes": "La clase conserva el error subyacente mediante la opción cause de Error, disponible en ES2022."
+    },
+    {
+      "id": "class:src/core/errors.ts:AvatarKitError",
+      "type": "class",
+      "name": "AvatarKitError",
+      "filePath": "src/core/errors.ts",
+      "lineRange": [
+        13,
+        21
+      ],
+      "summary": "Error tipado del kit que asocia un AvatarErrorCode con el mensaje y la causa del fallo, usado por los adaptadores de Supabase y el hook.",
+      "tags": [
+        "error",
+        "clase",
+        "core",
+        "tipado"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/core/errors.ts:errorMessage",
+      "type": "function",
+      "name": "errorMessage",
+      "filePath": "src/core/errors.ts",
+      "lineRange": [
+        23,
+        27
+      ],
+      "summary": "Normaliza un error desconocido a texto, priorizando el mensaje de AvatarKitError, luego el de Error y finalmente un valor por defecto.",
+      "tags": [
+        "utilidad",
+        "normalización",
+        "error",
+        "core"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/core/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/core/index.ts",
+      "summary": "Barrel del núcleo que re-exporta tipos, errores, validación, construcción de rutas y configuración como superficie pública única del paquete.",
+      "tags": [
+        "barrel",
+        "entry-point",
+        "re-export",
+        "core"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Usa re-exports con extensión .js, propio de la resolución ESM de TypeScript en modo NodeNext."
+    },
+    {
+      "id": "file:src/react/ProfileDialog.tsx",
+      "type": "file",
+      "name": "ProfileDialog.tsx",
+      "filePath": "src/react/ProfileDialog.tsx",
+      "summary": "Diálogo de perfil de cliente que compone ProfileModal y Avatar con el hook useAvatarEditor, y expone variantes para cuenta interna y para el rol member.",
+      "tags": [
+        "componente",
+        "react",
+        "diálogo",
+        "perfil",
+        "client"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Componente cliente (\"use client\") que separa las props del modal base y delega la lógica de avatar en un hook."
+    },
+    {
+      "id": "function:src/react/ProfileDialog.tsx:ProfileDialog",
+      "type": "function",
+      "name": "ProfileDialog",
+      "filePath": "src/react/ProfileDialog.tsx",
+      "lineRange": [
+        28,
+        82
+      ],
+      "summary": "Componente principal que conecta el editor de avatar con el modal: calcula el estado dirty y saving, gestiona guardado y cierre, y muestra el Avatar editable con subida y eliminación.",
+      "tags": [
+        "componente",
+        "react",
+        "diálogo",
+        "avatar",
+        "perfil"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/react/ProfileDialog.tsx:InternalProfileDialog",
+      "type": "function",
+      "name": "InternalProfileDialog",
+      "filePath": "src/react/ProfileDialog.tsx",
+      "lineRange": [
+        85,
+        87
+      ],
+      "summary": "Envoltura para cuentas internas (staff/admin) que abre el diálogo con el título por defecto \"Mi perfil\".",
+      "tags": [
+        "componente",
+        "react",
+        "wrapper",
+        "perfil"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/react/ProfileDialog.tsx:MemberProfileDialog",
+      "type": "function",
+      "name": "MemberProfileDialog",
+      "filePath": "src/react/ProfileDialog.tsx",
+      "lineRange": [
+        90,
+        92
+      ],
+      "summary": "Envoltura para el rol de negocio (member) que abre el diálogo con el título \"Mi perfil de colaborador\".",
+      "tags": [
+        "componente",
+        "react",
+        "wrapper",
+        "perfil"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/react/useAvatar.ts",
+      "type": "file",
+      "name": "useAvatar.ts",
+      "filePath": "src/react/useAvatar.ts",
+      "summary": "Hook de React que gestiona el ciclo completo del avatar privado: carga desde el repositorio, firma y renovación de la URL, subida, eliminación, guardado y descarte con control de estado.",
+      "tags": [
+        "hook",
+        "react",
+        "estado",
+        "avatar",
+        "client"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Sincroniza refs con las props en cada render para evitar closures obsoletos y renueva la URL firmada con un intervalo antes de que expire."
+    },
+    {
+      "id": "function:src/react/useAvatar.ts:useAvatarEditor",
+      "type": "function",
+      "name": "useAvatarEditor",
+      "filePath": "src/react/useAvatar.ts",
+      "lineRange": [
+        34,
+        204
+      ],
+      "summary": "Hook principal que expone el controlador del avatar: recarga la ruta persistida, firma la URL con TTL, valida y sube archivos, elimina objetos temporales y persiste o descarta los cambios.",
+      "tags": [
+        "hook",
+        "async",
+        "estado",
+        "avatar",
+        "ciclo-de-vida"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/supabase/client.ts",
+      "type": "file",
+      "name": "client.ts",
+      "filePath": "src/supabase/client.ts",
+      "summary": "Exporta AvatarSupabaseClient, un alias de tipo flexible para el cliente de Supabase que admite cualquier esquema generado por la aplicación consumidora.",
+      "tags": [
+        "tipo",
+        "supabase",
+        "cliente",
+        "adaptador"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Usa SupabaseClient<any, any, any> para no acoplar el kit a un esquema de base de datos concreto."
+    },
+    {
+      "id": "file:src/supabase/repository.ts",
+      "type": "file",
+      "name": "repository.ts",
+      "filePath": "src/supabase/repository.ts",
+      "summary": "Fábrica del adaptador de repositorio de Supabase que lee la ruta del avatar desde la tabla de perfil y la persiste mediante una RPC que valida la propiedad en servidor.",
+      "tags": [
+        "repositorio",
+        "supabase",
+        "adaptador",
+        "acceso-a-datos",
+        "seguridad"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Lee la ruta con .maybeSingle() y delega la escritura en una RPC de Postgres; nunca expone columnas sensibles como org_id, pago o roles."
+    },
+    {
+      "id": "function:src/supabase/repository.ts:createSupabaseAvatarRepository",
+      "type": "function",
+      "name": "createSupabaseAvatarRepository",
+      "filePath": "src/supabase/repository.ts",
+      "lineRange": [
+        12,
+        42
+      ],
+      "summary": "Crea un AvatarRepository que resuelve el esquema según el tipo de propietario, consulta la columna de avatar y llama a la RPC de escritura, mapeando errores de permiso a FORBIDDEN.",
+      "tags": [
+        "fábrica",
+        "repositorio",
+        "supabase",
+        "rpc",
+        "seguridad"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/supabase/storage.ts",
+      "type": "file",
+      "name": "storage.ts",
+      "filePath": "src/supabase/storage.ts",
+      "summary": "Fábrica del adaptador de almacenamiento privado de Supabase que sube, elimina y firma URLs del bucket de avatares con un TTL configurable.",
+      "tags": [
+        "almacenamiento",
+        "supabase",
+        "adaptador",
+        "privacidad"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Es el único punto que conoce el bucket privado; el acceso a las imágenes siempre pasa por URLs firmadas."
+    },
+    {
+      "id": "function:src/supabase/storage.ts:createSupabaseAvatarStorage",
+      "type": "function",
+      "name": "createSupabaseAvatarStorage",
+      "filePath": "src/supabase/storage.ts",
+      "lineRange": [
+        12,
+        36
+      ],
+      "summary": "Crea un AvatarStorage con operaciones upload, remove y sign sobre el bucket configurado, lanzando AvatarKitError con códigos específicos ante cada fallo.",
+      "tags": [
+        "fábrica",
+        "storage",
+        "supabase",
+        "url-firmada"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pwa/install.ts",
+      "type": "file",
+      "name": "install.ts",
+      "filePath": "src/pwa/install.ts",
+      "summary": "Detecta si la PWA se ejecuta en modo standalone y observa el evento beforeinstallprompt para avisar cuándo está disponible la instalación.",
+      "tags": [
+        "utility",
+        "pwa",
+        "event-handler",
+        "instalacion",
+        "browser-api"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Expone un helper de suscripción que devuelve la función de limpieza de listeners, patrón habitual para integrarse con hooks de React."
+    },
+    {
+      "id": "file:src/react/Avatar.tsx",
+      "type": "file",
+      "name": "Avatar.tsx",
+      "filePath": "src/react/Avatar.tsx",
+      "summary": "Componente React de avatar que resuelve de forma asíncrona la URL de la imagen, muestra iniciales y ofrece carga y eliminación con etiquetas personalizables.",
+      "tags": [
+        "component",
+        "react",
+        "avatar",
+        "hook",
+        "ui"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "El hook interno usa un flag de cancelación en useEffect para descartar resoluciones asíncronas posteriores al desmontaje."
+    },
+    {
+      "id": "file:src/react/ProfileModal.tsx",
+      "type": "file",
+      "name": "ProfileModal.tsx",
+      "filePath": "src/react/ProfileModal.tsx",
+      "summary": "Modal de perfil reutilizable que coordina cierre, guardado y logout con confirmación, gestiona el foco y el teclado e integra el botón de instalación PWA.",
+      "tags": [
+        "component",
+        "react",
+        "modal",
+        "dialog",
+        "accesibilidad"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Gestiona explícitamente el foco inicial y la tecla Escape, patrón de accesibilidad para diálogos modales."
+    },
+    {
+      "id": "file:src/react/PwaInstall.tsx",
+      "type": "file",
+      "name": "PwaInstall.tsx",
+      "filePath": "src/react/PwaInstall.tsx",
+      "summary": "Aporta un hook y un botón React que comprueban si la PWA ya está instalada y permiten disparar el prompt de instalación.",
+      "tags": [
+        "hook",
+        "component",
+        "react",
+        "pwa",
+        "instalacion"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/react/labels.ts",
+      "type": "file",
+      "name": "labels.ts",
+      "filePath": "src/react/labels.ts",
+      "summary": "Define las etiquetas por defecto en español para los componentes de React y la utilidad mergeLabels para combinarlas con etiquetas personalizadas.",
+      "tags": [
+        "utility",
+        "i18n",
+        "localizacion",
+        "labels"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/pwa/install.ts:isStandaloneScreen",
+      "type": "function",
+      "name": "isStandaloneScreen",
+      "filePath": "src/pwa/install.ts",
+      "lineRange": [
+        6,
+        10
+      ],
+      "summary": "Comprueba mediante window.matchMedia si la aplicación se está mostrando en modo standalone de PWA.",
+      "tags": [
+        "utility",
+        "pwa",
+        "deteccion",
+        "browser-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/pwa/install.ts:watchInstallPrompt",
+      "type": "function",
+      "name": "watchInstallPrompt",
+      "filePath": "src/pwa/install.ts",
+      "lineRange": [
+        13,
+        28
+      ],
+      "summary": "Suscribe listeners de beforeinstallprompt y appinstalled, previene el comportamiento por defecto y notifica cuándo hay instalación disponible, devolviendo una función de limpieza.",
+      "tags": [
+        "utility",
+        "pwa",
+        "event-handler",
+        "lifecycle"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/react/Avatar.tsx:useResolvedSrc",
+      "type": "function",
+      "name": "useResolvedSrc",
+      "filePath": "src/react/Avatar.tsx",
+      "lineRange": [
+        28,
+        50
+      ],
+      "summary": "Hook que resuelve asíncronamente la URL de la imagen del avatar desde la ruta, con cancelación para ignorar resultados tras el desmontaje.",
+      "tags": [
+        "hook",
+        "async",
+        "state",
+        "url-resolution"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/react/Avatar.tsx:Avatar",
+      "type": "function",
+      "name": "Avatar",
+      "filePath": "src/react/Avatar.tsx",
+      "lineRange": [
+        53,
+        127
+      ],
+      "summary": "Componente que muestra la imagen o las iniciales del avatar y expone controles de carga y eliminación con estados de subida y error.",
+      "tags": [
+        "component",
+        "react",
+        "avatar",
+        "ui",
+        "event-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/react/ProfileModal.tsx:ProfileModal",
+      "type": "function",
+      "name": "ProfileModal",
+      "filePath": "src/react/ProfileModal.tsx",
+      "lineRange": [
+        28,
+        137
+      ],
+      "summary": "Modal que controla los estados de cierre y confirmación, restaura el foco al cerrar, atiende la tecla Escape y ofrece acciones de guardado, logout e instalación PWA.",
+      "tags": [
+        "component",
+        "react",
+        "modal",
+        "event-handler",
+        "accesibilidad"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/react/PwaInstall.tsx:usePwaInstall",
+      "type": "function",
+      "name": "usePwaInstall",
+      "filePath": "src/react/PwaInstall.tsx",
+      "lineRange": [
+        13,
+        36
+      ],
+      "summary": "Hook que detecta el modo standalone y observa el prompt de instalación, devolviendo el estado y una acción para instalar la PWA.",
+      "tags": [
+        "hook",
+        "pwa",
+        "state",
+        "event-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/react/PwaInstall.tsx:PwaInstallButton",
+      "type": "function",
+      "name": "PwaInstallButton",
+      "filePath": "src/react/PwaInstall.tsx",
+      "lineRange": [
+        38,
+        47
+      ],
+      "summary": "Botón que usa usePwaInstall y, si la app no está en modo standalone, muestra la acción de instalación con etiquetas localizables.",
+      "tags": [
+        "component",
+        "react",
+        "pwa",
+        "button",
+        "instalacion"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/react/labels.ts:mergeLabels",
+      "type": "function",
+      "name": "mergeLabels",
+      "filePath": "src/react/labels.ts",
+      "lineRange": [
+        34,
+        36
+      ],
+      "summary": "Combina las etiquetas personalizadas con las predeterminadas en español, permitiendo sobrescribirlas parcialmente.",
+      "tags": [
+        "utility",
+        "localizacion",
+        "merge"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Documentación principal del módulo independiente de avatares privados, diálogo de perfil y logout para Next.js + Supabase. Explica el modelo de dos dueños (internal/member), los presets de configuración, el SQL generado, el uso en React y el checklist de integración aún pendiente.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "guía-de-uso",
+        "integración"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Markdown en español con 11 secciones, ejemplos de TSX y comandos PowerShell para npm."
+    },
+    {
+      "id": "config:avatar-profile.config.json",
+      "type": "config",
+      "name": "avatar-profile.config.json",
+      "filePath": "avatar-profile.config.json",
+      "summary": "Preset de configuración propio del paquete que define el bucket privado connect-avatars, el límite de 2 MB y los MIME JPG/PNG/WebP, la RPC apk_set_avatar_path, los esquemas internal/member y las opciones de SQL y auditoría.",
+      "tags": [
+        "configuration",
+        "supabase",
+        "storage",
+        "avatar",
+        "sql"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Las claves internal y member son neutras; los roles reales se expresan en adminRoles y masterRole."
+    },
+    {
+      "id": "config:avatar-profile.connect-personnel.config.json",
+      "type": "config",
+      "name": "avatar-profile.connect-personnel.config.json",
+      "filePath": "avatar-profile.connect-personnel.config.json",
+      "summary": "Preset alternativo compatible con CONNECT que usa el bucket connect-personnel, pathLayout owner (<org>/<owner>/avatar/<uuid>.<ext>) y los roles admin/hr para los avatares del personal.",
+      "tags": [
+        "configuration",
+        "supabase",
+        "preset",
+        "storage",
+        "avatar"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Se diferencia del preset base por pathLayout: owner, el bucket connect-personnel y adminRoles [admin, hr]."
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "Manifiesto del paquete avatar-profile-kit v0.1.0 que expone los entry points core, react, supabase y styles.css, define los scripts typecheck/test/build/sql:render/check y declara React y Supabase como peerDependencies opcionales.",
+      "tags": [
+        "configuration",
+        "package-manifest",
+        "build-system",
+        "scripts",
+        "exports"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Módulo ESM (type: module) con peerDependencies opcionales para no forzar React ni Supabase en la app consumidora."
+    },
+    {
+      "id": "config:tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "tsconfig.json",
+      "summary": "Configuración de TypeScript del paquete: ES2022 con moduleResolution Bundler, modo strict y noUncheckedIndexedAccess, JSX react-jsx y emisión de declaraciones y source maps en dist excluyendo tests y scripts.",
+      "tags": [
+        "configuration",
+        "typescript",
+        "build-system",
+        "strict"
+      ],
+      "complexity": "simple",
+      "languageNotes": "moduleResolution Bundler y verbatimModuleSyntax favorecen el consumo ESM desde bundlers modernos."
+    },
+    {
+      "id": "config:tsconfig.test.json",
+      "type": "config",
+      "name": "tsconfig.test.json",
+      "filePath": "tsconfig.test.json",
+      "summary": "Configuración de pruebas que extiende tsconfig.json, desactiva la emisión, amplía rootDir a la raíz e incluye tests/**/* y scripts/**/* además de src/**/*.",
+      "tags": [
+        "configuration",
+        "typescript",
+        "test",
+        "extends"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Sobrescribe noEmit y rootDir heredados y es usado por el script npm run typecheck."
+    },
+    {
+      "id": "file:visual-poster.html",
+      "type": "file",
+      "name": "visual-poster.html",
+      "filePath": "visual-poster.html",
+      "summary": "Infografía HTML estática en español que resume el estado del módulo: cinco capas funcionales, dos dueños de avatar, tres plantillas SQL y el flujo de subida en un póster de 1400x980 píxeles.",
+      "tags": [
+        "documentation-visual",
+        "infografía",
+        "markup",
+        "resumen"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "HTML autocontenido con CSS embebido y sin JavaScript, pensado para exportación visual."
+    },
+    {
+      "id": "file:visual-resumen.html",
+      "type": "file",
+      "name": "visual-resumen.html",
+      "filePath": "visual-resumen.html",
+      "summary": "Panel HTML interactivo que documenta el módulo con un mapa de capas y detalle por archivo, el flujo de subida, los dos dueños, un checklist persistente en localStorage y una tabla de criterios cubiertos.",
+      "tags": [
+        "documentation-visual",
+        "interactive",
+        "markup",
+        "checklist",
+        "resumen"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Define un array DATA con referencias a archivos reales y un script que genera botones y guarda el checklist en localStorage."
+    },
+    {
+      "id": "config:.ua/config.json",
+      "type": "config",
+      "name": "config.json",
+      "filePath": ".ua/config.json",
+      "summary": "Artefacto interno generado por la herramienta de análisis que registra opciones como `autoUpdate: false` y `outputLanguage: es`; no forma parte del código del módulo.",
+      "tags": [
+        "configuración",
+        "artefacto-interno",
+        "análisis",
+        "metadatos"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:.ua/tmp/scan-stderr.txt",
+      "type": "document",
+      "name": "scan-stderr.txt",
+      "filePath": ".ua/tmp/scan-stderr.txt",
+      "summary": "Artefacto interno vacío creado por el escáner para capturar errores de stderr; no aporta contenido al análisis del módulo.",
+      "tags": [
+        "documentación",
+        "artefacto-interno",
+        "vacío",
+        "análisis"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/copy-assets.mjs",
+      "type": "file",
+      "name": "copy-assets.mjs",
+      "filePath": "scripts/copy-assets.mjs",
+      "summary": "Script de build que crea `dist/react/` y copia `styles.css` desde `src/react/` para incluir los estilos en la distribución del paquete.",
+      "tags": [
+        "build-script",
+        "assets",
+        "utility",
+        "distribución"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Usa `import.meta.url` con `new URL(...)` para resolver rutas relativas al módulo y top-level await sobre `mkdir`/`copyFile` de `node:fs/promises`."
+    },
+    {
+      "id": "file:scripts/render-sql.mts",
+      "type": "file",
+      "name": "render-sql.mts",
+      "filePath": "scripts/render-sql.mts",
+      "summary": "CLI que lee `avatar-profile.config.json`, la valida con `configFromJson` y renderiza las plantillas SQL; escribe los archivos al directorio `--out` o los imprime por stdout.",
+      "tags": [
+        "cli",
+        "script",
+        "sql",
+        "renderizado",
+        "configuración"
+      ],
+      "complexity": "simple",
+      "languageNotes": "TypeScript `.mts` en modo ESM con top-level await; el helper `argument` admite tanto `--clave valor` como `--clave=valor` y se sustituye la extensión `.tpl` al escribir la salida."
+    },
+    {
+      "id": "file:sql/001_columns.sql.tpl",
+      "type": "file",
+      "name": "001_columns.sql.tpl",
+      "filePath": "sql/001_columns.sql.tpl",
+      "summary": "Plantilla SQL que añade la columna `avatar_path` a las tablas interna y de miembros, crea índices de búsqueda por organización/propietario e incluye triggers de auditoría opcionales.",
+      "tags": [
+        "sql",
+        "plantilla",
+        "database",
+        "migración",
+        "esquema"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Emplea marcadores `{{...}}` que sustituye `renderSqlTemplates`; usa `begin`/`commit` y `add column if not exists` para que la migración sea idempotente."
+    },
+    {
+      "id": "file:sql/002_bucket_and_policies.sql.tpl",
+      "type": "file",
+      "name": "002_bucket_and_policies.sql.tpl",
+      "filePath": "sql/002_bucket_and_policies.sql.tpl",
+      "summary": "Plantilla SQL de 169 líneas que crea el bucket privado de Storage, helpers de pertenencia, rol y propiedad en el esquema `private`, y policies RLS de lectura, inserción, actualización y borrado sobre `storage.objects`.",
+      "tags": [
+        "sql",
+        "plantilla",
+        "security",
+        "storage",
+        "rls"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Las funciones usan `security definer` con `set search_path = ''`, `revoke all` y `grant execute` explícitos a `authenticated`; las policies validan la ruta por regex antes de derivar organización, tipo y dueño."
+    },
+    {
+      "id": "file:sql/003_rpc.sql.tpl",
+      "type": "file",
+      "name": "003_rpc.sql.tpl",
+      "filePath": "sql/003_rpc.sql.tpl",
+      "summary": "Plantilla SQL que define la única RPC permitida para escribir `avatar_path`, validando autenticación, pertenencia, propiedad, roles y coherencia de la ruta antes de actualizar la tabla correspondiente.",
+      "tags": [
+        "sql",
+        "plantilla",
+        "rpc",
+        "security",
+        "validación"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Función PL/pgSQL `security definer` con `raise exception` y SQLSTATE explícitos (42501/22023); revoca permisos a `public`/`anon` y concede ejecución únicamente a `authenticated`."
+    },
+    {
+      "id": "document:sql/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "sql/README.md",
+      "summary": "Documenta el flujo de renderizado de las plantillas SQL desde `avatar-profile.config.json`, enumera los tres archivos generados y explica las reglas de validación y aislamiento de permisos.",
+      "tags": [
+        "documentación",
+        "sql",
+        "configuración",
+        "security",
+        "guía"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:src/pwa/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "src/pwa/README.md",
+      "summary": "Guía de integración PWA: publicar el manifiesto, registrar un service worker mínimo y usar el botón de instalación que `ProfileModal` incluye por defecto.",
+      "tags": [
+        "documentación",
+        "pwa",
+        "manifest",
+        "service-worker",
+        "guía"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/pwa/manifest.template.webmanifest",
+      "type": "file",
+      "name": "manifest.template.webmanifest",
+      "filePath": "src/pwa/manifest.template.webmanifest",
+      "summary": "Plantilla de manifiesto PWA con marcadores `__APP_NAME__`, `__APP_SHORT_NAME__`, `__START_URL__` y `__THEME_COLOR__`, modo `standalone` e iconos de 192 y 512 px.",
+      "tags": [
+        "pwa",
+        "manifest",
+        "plantilla",
+        "configuración",
+        "iconos"
+      ],
+      "complexity": "simple",
+      "languageNotes": "JSON con marcadores de texto que la app destino debe sustituir; los iconos declaran `purpose: any maskable` para adaptarse a distintos sistemas operativos."
+    },
+    {
+      "id": "file:src/react/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/react/index.ts",
+      "summary": "Barrel de la API pública de React: reexporta Avatar, labels, useAvatar, ProfileModal, ProfileDialog, PwaInstall y el botón de instalación PWA.",
+      "tags": [
+        "barrel",
+        "entry-point",
+        "react",
+        "exports",
+        "api-pública"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Reexports ESM con extensión `.js` explícita, patrón habitual en paquetes TypeScript que se publican como ESM."
+    },
+    {
+      "id": "file:src/react/styles.css",
+      "type": "file",
+      "name": "styles.css",
+      "filePath": "src/react/styles.css",
+      "summary": "Hoja de estilos del módulo con todos los selectores prefijados `apk-` para evitar colisiones: avatar, modal de perfil, confirmación, logout, botón PWA, foco visible, adaptación móvil y movimiento reducido.",
+      "tags": [
+        "styles",
+        "css",
+        "component",
+        "responsive",
+        "accesibilidad"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Usa custom properties (`--apk-avatar-size`), `env(safe-area-inset-*)`, objetivos táctiles mínimos de 44 px, fuente de 16 px para evitar auto-zoom en iOS y media queries para móvil y `prefers-reduced-motion`."
+    },
+    {
+      "id": "file:src/supabase/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/supabase/index.ts",
+      "summary": "Barrel que expone la API pública de Supabase del módulo: cliente, storage y repositorio.",
+      "tags": [
+        "barrel",
+        "entry-point",
+        "supabase",
+        "exports"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Reexports ESM con extensión `.js` explícita, coherente con el resto del paquete publicado como ESM."
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/core/config.ts",
+      "target": "function:src/core/config.ts:assertIdentifier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "function:src/core/config.ts:qualifiedTable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "function:src/core/config.ts:defineAvatarConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "function:src/core/config.ts:assertSqlSafeConfig",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "function:src/core/config.ts:configFromJson",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "function:src/core/path.ts:buildAvatarPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "function:src/core/path.ts:parseAvatarPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "function:src/core/path.ts:isAvatarPath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "function:src/core/path.ts:avatarPathRegex",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "function:src/core/path.ts:getAvatarInitials",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/validation.ts",
+      "target": "function:src/core/validation.ts:isAllowedAvatarMime",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/validation.ts",
+      "target": "function:src/core/validation.ts:avatarExtension",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/validation.ts",
+      "target": "function:src/core/validation.ts:validateAvatarFile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sql/render.ts",
+      "target": "function:src/sql/render.ts:buildTemplateValues",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sql/render.ts",
+      "target": "function:src/sql/render.ts:renderSqlTemplates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "function:src/core/config.ts:assertIdentifier",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "function:src/core/config.ts:qualifiedTable",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "function:src/core/config.ts:defineAvatarConfig",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "function:src/core/config.ts:assertSqlSafeConfig",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "function:src/core/config.ts:configFromJson",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "function:src/core/path.ts:buildAvatarPath",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "function:src/core/path.ts:parseAvatarPath",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "function:src/core/path.ts:isAvatarPath",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "function:src/core/path.ts:avatarPathRegex",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "function:src/core/path.ts:getAvatarInitials",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/validation.ts",
+      "target": "function:src/core/validation.ts:isAllowedAvatarMime",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/validation.ts",
+      "target": "function:src/core/validation.ts:avatarExtension",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/validation.ts",
+      "target": "function:src/core/validation.ts:validateAvatarFile",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/sql/render.ts",
+      "target": "function:src/sql/render.ts:buildTemplateValues",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/sql/render.ts",
+      "target": "function:src/sql/render.ts:renderSqlTemplates",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "file:src/core/path.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "file:src/core/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "file:src/core/validation.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "file:src/core/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "file:src/core/validation.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/core/validation.ts",
+      "target": "file:src/core/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/sql/render.ts",
+      "target": "file:src/core/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/sql/render.ts",
+      "target": "file:src/core/path.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/sql/render.ts",
+      "target": "file:src/core/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/core.test.ts",
+      "target": "file:src/core/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/core.test.ts",
+      "target": "file:src/core/path.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/core.test.ts",
+      "target": "file:src/core/validation.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/permissions.test.ts",
+      "target": "file:src/core/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/permissions.test.ts",
+      "target": "file:src/sql/render.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:src/core/config.ts:assertSqlSafeConfig",
+      "target": "function:src/core/path.ts:avatarPathRegex",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sql/render.ts:buildTemplateValues",
+      "target": "function:src/core/config.ts:assertSqlSafeConfig",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sql/render.ts:buildTemplateValues",
+      "target": "function:src/core/config.ts:qualifiedTable",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sql/render.ts:buildTemplateValues",
+      "target": "function:src/core/path.ts:avatarPathRegex",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "file:tests/core.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/core/path.ts",
+      "target": "file:tests/core.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/core/validation.ts",
+      "target": "file:tests/core.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/core/config.ts",
+      "target": "file:tests/permissions.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/sql/render.ts",
+      "target": "file:tests/permissions.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/core/errors.ts",
+      "target": "class:src/core/errors.ts:AvatarKitError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/errors.ts",
+      "target": "function:src/core/errors.ts:errorMessage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/core/errors.ts",
+      "target": "class:src/core/errors.ts:AvatarKitError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/core/errors.ts",
+      "target": "function:src/core/errors.ts:errorMessage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/react/ProfileDialog.tsx",
+      "target": "function:src/react/ProfileDialog.tsx:ProfileDialog",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/react/ProfileDialog.tsx",
+      "target": "function:src/react/ProfileDialog.tsx:InternalProfileDialog",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/react/ProfileDialog.tsx",
+      "target": "function:src/react/ProfileDialog.tsx:MemberProfileDialog",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/react/ProfileDialog.tsx",
+      "target": "function:src/react/ProfileDialog.tsx:ProfileDialog",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/react/ProfileDialog.tsx",
+      "target": "function:src/react/ProfileDialog.tsx:InternalProfileDialog",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/react/ProfileDialog.tsx",
+      "target": "function:src/react/ProfileDialog.tsx:MemberProfileDialog",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/react/ProfileDialog.tsx",
+      "target": "file:src/core/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/ProfileDialog.tsx",
+      "target": "file:src/react/Avatar.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/ProfileDialog.tsx",
+      "target": "file:src/react/ProfileModal.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/ProfileDialog.tsx",
+      "target": "file:src/react/useAvatar.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/ProfileDialog.tsx",
+      "target": "file:src/supabase/repository.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/ProfileDialog.tsx",
+      "target": "file:src/supabase/storage.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:src/react/ProfileDialog.tsx:ProfileDialog",
+      "target": "function:src/react/useAvatar.ts:useAvatarEditor",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/react/ProfileDialog.tsx:ProfileDialog",
+      "target": "function:src/react/Avatar.tsx:Avatar",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/react/ProfileDialog.tsx:ProfileDialog",
+      "target": "function:src/react/ProfileModal.tsx:ProfileModal",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/react/ProfileDialog.tsx:InternalProfileDialog",
+      "target": "function:src/react/ProfileDialog.tsx:ProfileDialog",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/react/ProfileDialog.tsx:MemberProfileDialog",
+      "target": "function:src/react/ProfileDialog.tsx:ProfileDialog",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/react/useAvatar.ts",
+      "target": "function:src/react/useAvatar.ts:useAvatarEditor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/react/useAvatar.ts",
+      "target": "function:src/react/useAvatar.ts:useAvatarEditor",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/react/useAvatar.ts",
+      "target": "file:src/core/errors.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/useAvatar.ts",
+      "target": "file:src/core/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/useAvatar.ts",
+      "target": "file:src/core/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/useAvatar.ts",
+      "target": "file:src/supabase/repository.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/useAvatar.ts",
+      "target": "file:src/supabase/storage.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:src/react/useAvatar.ts:useAvatarEditor",
+      "target": "function:src/core/errors.ts:errorMessage",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/supabase/repository.ts",
+      "target": "function:src/supabase/repository.ts:createSupabaseAvatarRepository",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/supabase/repository.ts",
+      "target": "function:src/supabase/repository.ts:createSupabaseAvatarRepository",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/supabase/repository.ts",
+      "target": "file:src/core/errors.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/supabase/repository.ts",
+      "target": "file:src/core/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/supabase/repository.ts",
+      "target": "file:src/supabase/client.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:src/supabase/repository.ts:createSupabaseAvatarRepository",
+      "target": "class:src/core/errors.ts:AvatarKitError",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/supabase/storage.ts",
+      "target": "function:src/supabase/storage.ts:createSupabaseAvatarStorage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/supabase/storage.ts",
+      "target": "function:src/supabase/storage.ts:createSupabaseAvatarStorage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/supabase/storage.ts",
+      "target": "file:src/core/errors.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/supabase/storage.ts",
+      "target": "file:src/core/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/supabase/storage.ts",
+      "target": "file:src/supabase/client.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:src/supabase/storage.ts:createSupabaseAvatarStorage",
+      "target": "class:src/core/errors.ts:AvatarKitError",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/react/Avatar.tsx",
+      "target": "file:src/core/path.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/Avatar.tsx",
+      "target": "file:src/react/labels.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/ProfileModal.tsx",
+      "target": "file:src/react/PwaInstall.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/ProfileModal.tsx",
+      "target": "file:src/react/labels.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/PwaInstall.tsx",
+      "target": "file:src/pwa/install.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/react/PwaInstall.tsx",
+      "target": "file:src/react/labels.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/pwa/install.ts",
+      "target": "function:src/pwa/install.ts:isStandaloneScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/pwa/install.ts",
+      "target": "function:src/pwa/install.ts:watchInstallPrompt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/react/Avatar.tsx",
+      "target": "function:src/react/Avatar.tsx:useResolvedSrc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/react/Avatar.tsx",
+      "target": "function:src/react/Avatar.tsx:Avatar",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/react/ProfileModal.tsx",
+      "target": "function:src/react/ProfileModal.tsx:ProfileModal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/react/PwaInstall.tsx",
+      "target": "function:src/react/PwaInstall.tsx:usePwaInstall",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/react/PwaInstall.tsx",
+      "target": "function:src/react/PwaInstall.tsx:PwaInstallButton",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/react/labels.ts",
+      "target": "function:src/react/labels.ts:mergeLabels",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/pwa/install.ts",
+      "target": "function:src/pwa/install.ts:isStandaloneScreen",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/pwa/install.ts",
+      "target": "function:src/pwa/install.ts:watchInstallPrompt",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/react/Avatar.tsx",
+      "target": "function:src/react/Avatar.tsx:Avatar",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/react/ProfileModal.tsx",
+      "target": "function:src/react/ProfileModal.tsx:ProfileModal",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/react/PwaInstall.tsx",
+      "target": "function:src/react/PwaInstall.tsx:usePwaInstall",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/react/PwaInstall.tsx",
+      "target": "function:src/react/PwaInstall.tsx:PwaInstallButton",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/react/labels.ts",
+      "target": "function:src/react/labels.ts:mergeLabels",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/react/Avatar.tsx:Avatar",
+      "target": "function:src/core/path.ts:getAvatarInitials",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/react/Avatar.tsx:Avatar",
+      "target": "function:src/react/labels.ts:mergeLabels",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/react/ProfileModal.tsx:ProfileModal",
+      "target": "function:src/react/PwaInstall.tsx:PwaInstallButton",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/react/ProfileModal.tsx:ProfileModal",
+      "target": "function:src/react/labels.ts:mergeLabels",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/react/PwaInstall.tsx:usePwaInstall",
+      "target": "function:src/pwa/install.ts:isStandaloneScreen",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/react/PwaInstall.tsx:usePwaInstall",
+      "target": "function:src/pwa/install.ts:watchInstallPrompt",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/react/PwaInstall.tsx:PwaInstallButton",
+      "target": "function:src/react/labels.ts:mergeLabels",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "document:README.md",
+      "target": "config:avatar-profile.config.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "config:avatar-profile.connect-personnel.config.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "config:package.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:avatar-profile.config.json",
+      "target": "config:avatar-profile.connect-personnel.config.json",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:package.json",
+      "target": "config:tsconfig.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:package.json",
+      "target": "config:tsconfig.test.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:tsconfig.test.json",
+      "target": "config:tsconfig.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:visual-poster.html",
+      "target": "document:README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:visual-resumen.html",
+      "target": "document:README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:visual-poster.html",
+      "target": "file:visual-resumen.html",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:visual-resumen.html",
+      "target": "config:avatar-profile.config.json",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:visual-resumen.html",
+      "target": "config:avatar-profile.connect-personnel.config.json",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:scripts/copy-assets.mjs",
+      "target": "file:src/react/styles.css",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/render-sql.mts",
+      "target": "file:sql/001_columns.sql.tpl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/render-sql.mts",
+      "target": "file:sql/002_bucket_and_policies.sql.tpl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/render-sql.mts",
+      "target": "file:sql/003_rpc.sql.tpl",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:sql/README.md",
+      "target": "file:sql/001_columns.sql.tpl",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:sql/README.md",
+      "target": "file:sql/002_bucket_and_policies.sql.tpl",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:sql/README.md",
+      "target": "file:sql/003_rpc.sql.tpl",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:sql/README.md",
+      "target": "file:scripts/render-sql.mts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:src/pwa/README.md",
+      "target": "file:src/pwa/manifest.template.webmanifest",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:src/pwa/README.md",
+      "target": "file:src/react/index.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:core",
+      "name": "Núcleo compartido",
+      "description": "Tipos, errores y utilidades de configuración, rutas y validación compartidas por las capas React y Supabase.",
+      "nodeIds": [
+        "file:src/core/config.ts",
+        "file:src/core/path.ts",
+        "file:src/core/types.ts",
+        "file:src/core/validation.ts",
+        "file:src/core/errors.ts",
+        "file:src/core/index.ts"
+      ]
+    },
+    {
+      "id": "layer:react",
+      "name": "Capa React",
+      "description": "Componentes, hook y estilos de React que implementan el avatar editable, el diálogo de perfil, el logout y la instalación PWA.",
+      "nodeIds": [
+        "file:src/react/ProfileDialog.tsx",
+        "file:src/react/useAvatar.ts",
+        "file:src/react/Avatar.tsx",
+        "file:src/react/ProfileModal.tsx",
+        "file:src/react/PwaInstall.tsx",
+        "file:src/react/labels.ts",
+        "file:src/react/index.ts",
+        "file:src/react/styles.css"
+      ],
+      "containerLabels": [
+        {
+          "name": "Editor de avatar",
+          "nodeIds": [
+            "file:src/react/ProfileDialog.tsx",
+            "file:src/react/useAvatar.ts",
+            "file:src/react/Avatar.tsx"
+          ]
+        },
+        {
+          "name": "Modal e instalación PWA",
+          "nodeIds": [
+            "file:src/react/ProfileModal.tsx",
+            "file:src/react/PwaInstall.tsx"
+          ]
+        },
+        {
+          "name": "Estilos y exportaciones",
+          "nodeIds": [
+            "file:src/react/labels.ts",
+            "file:src/react/styles.css",
+            "file:src/react/index.ts"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "layer:supabase",
+      "name": "Adaptadores de Supabase",
+      "description": "Adaptadores de repositorio y almacenamiento privado de Supabase con firma de URLs y RPC de escritura validada en servidor.",
+      "nodeIds": [
+        "file:src/supabase/client.ts",
+        "file:src/supabase/repository.ts",
+        "file:src/supabase/storage.ts",
+        "file:src/supabase/index.ts"
+      ]
+    },
+    {
+      "id": "layer:pwa",
+      "name": "Capa PWA",
+      "description": "Detección del modo standalone, plantilla del manifiesto y guía de instalación consumidas por los componentes React.",
+      "nodeIds": [
+        "file:src/pwa/install.ts",
+        "file:src/pwa/manifest.template.webmanifest",
+        "document:src/pwa/README.md"
+      ]
+    },
+    {
+      "id": "layer:data",
+      "name": "Capa SQL y datos",
+      "description": "Renderizado de plantillas y definiciones SQL de columnas, bucket privado, políticas RLS y RPC para el esquema de Supabase.",
+      "nodeIds": [
+        "file:src/sql/render.ts",
+        "file:sql/001_columns.sql.tpl",
+        "file:sql/002_bucket_and_policies.sql.tpl",
+        "file:sql/003_rpc.sql.tpl",
+        "document:sql/README.md"
+      ]
+    },
+    {
+      "id": "layer:test",
+      "name": "Pruebas",
+      "description": "Pruebas unitarias del núcleo y de integración de permisos RLS sobre configuración, rutas y visibilidad de avatares.",
+      "nodeIds": [
+        "file:tests/core.test.ts",
+        "file:tests/permissions.test.ts"
+      ]
+    },
+    {
+      "id": "layer:build",
+      "name": "Scripts de construcción",
+      "description": "Scripts que copian los estilos a dist y renderizan el SQL parametrizado a partir del preset de configuración.",
+      "nodeIds": [
+        "file:scripts/copy-assets.mjs",
+        "file:scripts/render-sql.mts"
+      ]
+    },
+    {
+      "id": "layer:config",
+      "name": "Configuración del proyecto",
+      "description": "Presets de avatar, manifiesto del paquete y opciones de TypeScript que fijan tablas, bucket, roles y la API publicada.",
+      "nodeIds": [
+        "config:avatar-profile.config.json",
+        "config:avatar-profile.connect-personnel.config.json",
+        "config:package.json",
+        "config:tsconfig.json",
+        "config:tsconfig.test.json",
+        "config:.ua/config.json"
+      ]
+    },
+    {
+      "id": "layer:documentation",
+      "name": "Documentación",
+      "description": "Guía principal de integración y paneles visuales en español que resumen capas, dueños y flujo de subida del módulo.",
+      "nodeIds": [
+        "document:README.md",
+        "file:visual-poster.html",
+        "file:visual-resumen.html",
+        "document:.ua/tmp/scan-stderr.txt"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Visión general del kit",
+      "description": "README.md presenta avatar-profile-kit como un módulo independiente para Next.js + Supabase que ofrece avatares privados, diálogo de perfil y logout único, sin importar ni modificar CONICA-RRHH. Define el modelo de dos dueños —internal (platform_usernames) y member (employee_profiles vía user_employee_links)— con claves neutras que la UI no hardcodea por rol. El póster y el panel visual resumen las cinco capas funcionales, las tres plantillas SQL y el flujo de subida, y señalan que el núcleo, los adaptadores, el SQL y los tests están listos pero aún sin integrar en la app.",
+      "nodeIds": [
+        "document:README.md",
+        "file:visual-poster.html",
+        "file:visual-resumen.html"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "API pública y empaquetado",
+      "description": "Tras el mapa general, package.json fija los entry points publicados (core, react, supabase y styles.css), los scripts typecheck/test/build/sql:render/check y declara React y Supabase como peerDependencies opcionales para no forzarlas en la app consumidora. No existe un src/index.ts global: las tres APIs reales son los barrels src/core/index.ts, src/react/index.ts y src/supabase/index.ts, que concentran la superficie de cada capa. tsconfig.json complementa este contrato con ES2022, modo strict, noUncheckedIndexedAccess y emisión de declaraciones en dist.",
+      "nodeIds": [
+        "config:package.json",
+        "config:tsconfig.json",
+        "file:src/core/index.ts",
+        "file:src/react/index.ts",
+        "file:src/supabase/index.ts"
+      ],
+      "languageLesson": "Los barrels reexportan con extensión `.js` explícita: así el paquete publicado como ESM resuelve correctamente tanto en NodeNext como en bundlers con moduleResolution Bundler."
+    },
+    {
+      "order": 3,
+      "title": "Tipos y errores compartidos",
+      "description": "Apoyándonos en los tres barrels, conviene empezar por el vocabulario que todos comparten. types.ts es el nodo más dependido del grafo: define los propietarios de avatar, la configuración SQL y las formas de datos que consumen las capas React y Supabase. errors.ts completa el contrato con un union type de códigos, la clase AvatarKitError que conserva la causa original y errorMessage para convertir fallos desconocidos en texto legible.",
+      "nodeIds": [
+        "file:src/core/types.ts",
+        "file:src/core/errors.ts"
+      ],
+      "languageLesson": "Las uniones de tipos literales, como los códigos de error, funcionan como conjuntos cerrados: TypeScript exige tratar cada variante y permite estrechar el tipo mediante comprobaciones, sin depender de cadenas mágicas."
+    },
+    {
+      "order": 4,
+      "title": "Configuración y presets",
+      "description": "Los tipos del paso 3 se concretan en avatar-profile.config.json, preset propio con bucket privado connect-avatars, límite de 2 MB, MIME JPG/PNG/WebP, RPC apk_set_avatar_path y esquemas internal/member. El preset alternativo connect-personnel cambia el bucket, usa pathLayout owner (<org>/<owner>/avatar/<uuid>.<ext>) y roles admin/hr, demostrando que el kit se adapta al esquema de la app sin tocar su código. En el centro, config.ts normaliza esa entrada y valida con expresiones regulares que tablas, columnas, roles y rutas sean identificadores seguros antes de incrustarlos en SQL; su alto fan-out y su acoplamiento con los tests confirman que es una pieza central.",
+      "nodeIds": [
+        "config:avatar-profile.config.json",
+        "config:avatar-profile.connect-personnel.config.json",
+        "file:src/core/config.ts"
+      ],
+      "languageLesson": "Al generar SQL desde JSON, cada identificador se valida con un patrón estricto (assertIdentifier y qualifiedTable): la configuración es datos, no código ejecutable, y una interpolación directa abriría la puerta a inyección SQL."
+    },
+    {
+      "order": 5,
+      "title": "Rutas y validación de archivos",
+      "description": "Sobre la configuración validada del paso anterior, path.ts construye, analiza y valida rutas de almacenamiento y deriva iniciales del nombre como respaldo visual; es el segundo nodo más dependido del núcleo. validation.ts complementa el filtro de entrada con los MIME permitidos, el tamaño máximo y la resolución de la extensión. Juntos definen el contrato de lo que se puede subir y cómo se nombra cada objeto antes de que React o Supabase interactúen con el bucket.",
+      "nodeIds": [
+        "file:src/core/path.ts",
+        "file:src/core/validation.ts"
+      ],
+      "languageLesson": "Las rutas usan crypto.randomUUID de globalThis para garantizar unicidad entre plataformas y expresiones regulares construidas desde la configuración para reconocer formatos con y sin tipo de propietario."
+    },
+    {
+      "order": 6,
+      "title": "Pruebas unitarias del núcleo",
+      "description": "El clúster más acoplado del grafo reúne config.ts, path.ts, validation.ts, types.ts y core.test.ts, así que conviene leer las pruebas justo después de las utilidades. core.test.ts cubre la normalización y validación de la configuración, la construcción de rutas y las reglas de archivos, y funciona como especificación ejecutable de los pasos 4 y 5. tsconfig.test.json extiende la configuración base, desactiva la emisión e incluye tests/**/* y scripts/**/* junto a src/**/*, y es la base del script typecheck.",
+      "nodeIds": [
+        "file:tests/core.test.ts",
+        "config:tsconfig.test.json"
+      ],
+      "languageLesson": "En TypeScript, un archivo de configuración puede heredarse con `extends` y sobrescribir opciones como `noEmit` o `rootDir`; así las pruebas comparten reglas de compilación con la librería sin duplicarlas."
+    },
+    {
+      "order": 7,
+      "title": "Cliente y almacenamiento privado",
+      "description": "Pasando del núcleo a la capa Supabase, client.ts exporta AvatarSupabaseClient como un alias flexible que admite cualquier esquema generado por la aplicación consumidora. storage.ts es el único punto que conoce el bucket privado: sube, elimina y firma URLs con un TTL configurable, y traduce cada fallo a AvatarKitError con códigos específicos. Esta separación permite que el hook de React trabaje con imágenes privadas sin conocer los detalles del bucket ni exponer los objetos públicamente.",
+      "nodeIds": [
+        "file:src/supabase/client.ts",
+        "file:src/supabase/storage.ts"
+      ],
+      "languageLesson": "El alias SupabaseClient<any, any, any> evita acoplar el kit a un esquema concreto; el coste es que la seguridad debe garantizarla la capa de datos, no el tipado."
+    },
+    {
+      "order": 8,
+      "title": "Repositorio y RPC de escritura",
+      "description": "El adaptador se completa con repository.ts, que resuelve el esquema según el tipo de propietario y lee la ruta persistida con .maybeSingle() en la tabla de perfil correspondiente. La escritura no se hace con un UPDATE directo, sino mediante una RPC de Postgres que valida la propiedad en servidor; los errores de permiso se mapean a FORBIDDEN y nunca se exponen columnas sensibles como org_id, pago o roles. Junto al paso 7, cubre las dos mitades del ciclo: los bytes privados en Storage y los metadatos autorizados en la tabla.",
+      "nodeIds": [
+        "file:src/supabase/repository.ts"
+      ],
+      "languageLesson": ".maybeSingle() devuelve null cuando no hay fila en lugar de lanzar un error, lo que encaja con un avatar todavía no subido; delegar la escritura en una RPC mueve la comprobación de propiedad al servidor, donde el cliente no puede eludirla."
+    },
+    {
+      "order": 9,
+      "title": "Renderizado parametrizado de SQL",
+      "description": "La configuración del paso 4 alimenta ahora la capa de datos: render.ts sustituye marcadores por valores validados y detecta tokens residuales para que no quede SQL sin resolver. render-sql.mts es la CLI que lee el preset, lo valida con configFromJson y escribe los archivos en --out o los imprime por stdout. sql/README.md documenta ese flujo, los tres archivos generados y las reglas de validación y aislamiento de permisos que se harán efectivas en el siguiente paso.",
+      "nodeIds": [
+        "file:src/sql/render.ts",
+        "file:scripts/render-sql.mts",
+        "document:sql/README.md"
+      ],
+      "languageLesson": "El motor usa marcadores `{{clave}}` y comprueba que no queden marcadores sin sustituir; la CLI está escrita en TypeScript `.mts` con top-level await y acepta tanto `--clave valor` como `--clave=valor`."
+    },
+    {
+      "order": 10,
+      "title": "Esquema, bucket y políticas RLS",
+      "description": "Las tres plantillas materializan la seguridad descrita en los pasos 7 y 8. 001_columns.sql.tpl añade avatar_path a las tablas interna y de miembros, crea índices por organización/propietario e incluye triggers de auditoría opcionales. 002_bucket_and_policies.sql.tpl crea el bucket privado, helpers en el esquema private y policies RLS sobre storage.objects; 003_rpc.sql.tpl define la única RPC permitida para escribir la ruta, validando autenticación, pertenencia, propiedad y roles antes de actualizar la tabla.",
+      "nodeIds": [
+        "file:sql/001_columns.sql.tpl",
+        "file:sql/002_bucket_and_policies.sql.tpl",
+        "file:sql/003_rpc.sql.tpl"
+      ],
+      "languageLesson": "Las migraciones son idempotentes (`add column if not exists`, `begin`/`commit`) y las funciones usan `security definer` con `set search_path = ''` y permisos EXECUTE explícitos concedidos a `authenticated` para reducir la superficie de privilegios."
+    },
+    {
+      "order": 11,
+      "title": "Verificación de permisos RLS",
+      "description": "permissions.test.ts cierra el círculo de la capa de datos con pruebas de integración que siembran datos y alternan el usuario activo para comprobar qué avatares ve cada rol. El grafo lo agrupa con config.ts y render.ts, reflejando que estas pruebas ejercitan tanto la configuración como el SQL generado. Simulan el comportamiento RLS de Supabase con una base SQLite en memoria, lo que permite validar la visibilidad sin depender de un proyecto remoto.",
+      "nodeIds": [
+        "file:tests/permissions.test.ts"
+      ],
+      "languageLesson": "Simular RLS en SQLite en memoria acelera el ciclo de pruebas, pero la simulación es una aproximación: las reglas de la base real y su doble de prueba deben mantenerse sincronizadas."
+    },
+    {
+      "order": 12,
+      "title": "Ciclo de vida del avatar",
+      "description": "Con los datos y permisos ya entendidos, useAvatar.ts gestiona el ciclo completo del avatar privado: carga desde el repositorio, firma y renueva la URL, valida y sube archivos, elimina temporales y persiste o descarta cambios con control de estado. Avatar.tsx resuelve la URL de forma asíncrona, muestra iniciales cuando no hay imagen y ofrece carga y eliminación con etiquetas personalizables. labels.ts aporta los textos por defecto en español y mergeLabels para sobrescribirlos parcialmente, de modo que la UI herede el idioma sin perder flexibilidad.",
+      "nodeIds": [
+        "file:src/react/useAvatar.ts",
+        "file:src/react/Avatar.tsx",
+        "file:src/react/labels.ts"
+      ],
+      "languageLesson": "El hook sincroniza refs con las props en cada render para evitar closures obsoletos y renueva la URL firmada con un intervalo antes de que expire; el componente Avatar usa un flag de cancelación en useEffect para ignorar resoluciones posteriores al desmontaje."
+    },
+    {
+      "order": 13,
+      "title": "Diálogo de perfil y logout",
+      "description": "ProfileDialog.tsx es el nodo con mayor fan-out del código: compone ProfileModal y Avatar con useAvatarEditor, calcula los estados dirty y saving y ofrece las variantes InternalProfileDialog y MemberProfileDialog sin hardcodear roles en la lógica. ProfileModal.tsx coordina cierre, guardado y logout con confirmación, restaura el foco, atiende la tecla Escape e incluye el botón de instalación PWA que se explica al final del recorrido. styles.css fija la presentación con selectores prefijados apk-, foco visible, objetivos táctiles y adaptación a móvil y prefers-reduced-motion, y copy-assets.mjs se encarga de llevarlo a dist/react/ en la distribución.",
+      "nodeIds": [
+        "file:src/react/ProfileDialog.tsx",
+        "file:src/react/ProfileModal.tsx",
+        "file:src/react/styles.css",
+        "file:scripts/copy-assets.mjs"
+      ],
+      "languageLesson": "El prefijo `apk-` evita colisiones con los estilos de la app anfitriona y las custom properties como `--apk-avatar-size` permiten ajustar el componente sin editar la hoja."
+    },
+    {
+      "order": 14,
+      "title": "Instalación PWA",
+      "description": "El botón integrado en ProfileModal se apoya en install.ts, que detecta el modo standalone con matchMedia y observa beforeinstallprompt para avisar cuándo está disponible la instalación. PwaInstall.tsx expone el hook usePwaInstall y PwaInstallButton, que solo muestra la acción si la app no está ya instalada. La guía src/pwa/README.md explica cómo publicar el manifiesto y registrar un service worker mínimo, mientras manifest.template.webmanifest define marcadores de nombre, URL y color, modo standalone e iconos de 192 y 512 px con purpose any maskable.",
+      "nodeIds": [
+        "file:src/pwa/install.ts",
+        "file:src/react/PwaInstall.tsx",
+        "file:src/pwa/manifest.template.webmanifest",
+        "document:src/pwa/README.md"
+      ],
+      "languageLesson": "watchInstallPrompt devuelve una función de limpieza que retira los listeners; este patrón de suscripción encaja con el effect de un hook de React y evita fugas al desmontar."
+    }
+  ]
+}

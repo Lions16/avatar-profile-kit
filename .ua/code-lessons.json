@@ -1,0 +1,1843 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-25T06:28:16.794Z",
+  "files": {
+    "README.md": {
+      "overview": "Documento rector del kit: presenta avatar-profile-kit como un módulo independiente para Next.js + Supabase que no importa ni modifica CONICA-RRHH. Define el modelo de dos dueños con claves neutras (`internal`/`member`), enumera el estado real de cada capa y sirve de guía de configuración, uso en React e integración futura. Es el ancla del paso 1 del tour (Visión general del kit) y enmarca todo lo que el resto de archivos del recorrido desarrollan con detalle.",
+      "sections": [
+        {
+          "title": "Introducción y modelo de dos dueños",
+          "lineRange": [
+            1,
+            12
+          ],
+          "explanation": "El encabezado deja explícito que el paquete vive fuera del repo de la app (`C:\\Proyecto predeterminado\\avatar-profile-kit`) y que no toca código de `CONICA-RRHH`, una decisión de aislamiento que se repite en todo el proyecto. La tabla presenta las dos claves dueño: `internal` sobre `platform_usernames` con `auth_user_id`, y `member` sobre `employee_profiles` vía `user_employee_links`. La frase clave es que la UI no hardcodea roles: `internal`/`member` son claves neutras y los roles (`admin`, `master`) solo viven en la configuración SQL, de modo que el mismo componente sirve a cualquier app.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Estado actual",
+          "lineRange": [
+            14,
+            21
+          ],
+          "explanation": "Un inventario con marcadores de estado separa lo ya terminado (core puro, adaptadores Supabase, componentes React, SQL parametrizable y tests con PGlite) de lo pendiente. El último punto advierte que no se ha tocado `src/`, `supabase/` ni `package.json` de la app: la integración es un paso posterior y explícito. Esta sección evita malentendidos al lector: 'paquete listo' no significa 'ya integrado'.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Verificación del paquete",
+          "lineRange": [
+            23,
+            29
+          ],
+          "explanation": "Un bloque PowerShell mínimo instala dependencias y ejecuta `npm.cmd run check`. Se usa `npm.cmd` porque el documento asume Windows, coherente con la ruta del proyecto. Es la forma más rápida de validar que el paquete compila y pasa sus pruebas antes de cualquier integración.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Configuración y presets",
+          "lineRange": [
+            31,
+            55
+          ],
+          "explanation": "Enumera los campos del JSON rector (`bucket`, `pathFolder`, `maxBytes`, `allowedMimeTypes`, los dos `schemas`, `membership`, `memberLink`, `adminRoles`, `masterRole` y `sql.auditFunction`) y describe los dos presets incluidos. El preset propio usa `connect-avatars` con ruta por tipo de dueño; el de `connect-personnel` usa `pathLayout: \"owner\"`, bucket distinto y roles `admin`/`hr`. La advertencia final de no escribir directamente en `supabase/migrations/` refuerza el principio de que el SQL generado debe revisarse antes de aplicarse.",
+          "tourOrder": 1
+        },
+        {
+          "title": "SQL generado",
+          "lineRange": [
+            57,
+            74
+          ],
+          "explanation": "Describe las tres plantillas y la forma de ruta `<organization_id>/<internal|member>/<owner_id>/avatar/<uuid>.<ext>`. Las garantías se centran en el bucket privado, las policies por carpeta propia, el bypass de roles y la RPC `apk_set_avatar_path` con `security definer` y `search_path = ''`. El punto más importante es que no se concede `update` directo a las tablas de perfil: toda escritura pasa por la RPC, que valida pertenencia, forma de ruta y existencia del perfil.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Uso en React",
+          "lineRange": [
+            76,
+            107
+          ],
+          "explanation": "Un ejemplo completo muestra cómo la app consumidora compone las tres APIs públicas: `configFromJson` desde el barrel raíz, los adaptadores desde `avatar-profile-kit/supabase` y `InternalProfileDialog` desde `avatar-profile-kit/react`, además de la hoja de estilos. El `owner` solo expone `kind`, ids y nombre, sin datos sensibles. También señala que `ProfileModal` puede reutilizarse sin avatar y que la variante `member` cambia solo el título o el `owner.kind`.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Subida, logout y PWA",
+          "lineRange": [
+            109,
+            119
+          ],
+          "explanation": "Resume el comportamiento de la UI: `Avatar` muestra la URL firmada o iniciales, `useAvatarEditor` coordina upload/remove/save/discard y renueva la URL antes de que expire. Detalla decisiones de producto visibles en el código: los archivos no guardados se borran al cancelar, el botón de salida va en rojo arriba a la derecha con objetivos táctiles de 44 px, el footer solo tiene Cancelar y Guardar, y hay confirmación si `dirty === true`. El botón de instalación PWA aparece solo cuando el navegador dispara `beforeinstallprompt`.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Checklist de integración futura",
+          "lineRange": [
+            121,
+            129
+          ],
+          "explanation": "Siete pasos ordenados para la app destino: instalar el paquete, renderizar y revisar el SQL a una carpeta temporal, crear los puntos de entrada de ambos perfiles, mover el logout del header al modal (retirando el `<form action={signOut}>`) y añadir la plantilla PWA. El encabezado insiste en que no está aplicado. Es la hoja de ruta que conecta este paso 1 con los últimos pasos del tour.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Criterios de aceptación",
+          "lineRange": [
+            131,
+            140
+          ],
+          "explanation": "Una tabla traza cada criterio funcional hasta el archivo o símbolo que lo implementa: `useAvatarEditor` más adaptadores y RPC, `getAvatarInitials`, `ProfileModal`, la validación de tipos y tamaño, `styles.css` y los tipos de `AvatarOwner`. Resulta útil como índice inverso: desde un requisito de producto se llega al punto concreto del código que lo satisface.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Fuera de alcance",
+          "lineRange": [
+            142,
+            144
+          ],
+          "explanation": "Cierra el documento delimitando explícitamente tres elementos: cambio de correo o contraseña, migración automática de la app y sustitución del logout actual sin aprobación. Este límite es coherente con el propósito del paquete: entregar piezas reutilizables y dejar las decisiones destructivas en manos del equipo de la app.",
+          "tourOrder": 1
+        }
+      ]
+    },
+    "visual-poster.html": {
+      "overview": "Infografía HTML estática de una sola página que resume el kit en formato de póster de 1400×980 px. Junto con README.md y visual-resumen.html, forma el paso 1 del tour: ofrece una vista panorámica de las cinco capas, los dos dueños, las tres plantillas SQL y el flujo de subida. No depende de JavaScript ni de la app; es documentación visual generada localmente.",
+      "sections": [
+        {
+          "title": "Documento y estilos base",
+          "lineRange": [
+            1,
+            15
+          ],
+          "explanation": "Declara un documento en español con codificación UTF-8 y un bloque `<style>` que fija el lienzo: `#poster` tiene dimensiones fijas de 1400×980 px, posición relativa y `overflow: hidden`, con un degradado de fondo. Los pseudoelementos `:before` y `:after` dibujan dos círculos decorativos para reforzar la identidad visual. El tamaño fijo indica que está pensado para exportarse como imagen o imprimirse, no para adaptarse a móvil.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Estilos de componentes",
+          "lineRange": [
+            16,
+            49
+          ],
+          "explanation": "Define las clases reutilizadas en el cuerpo: `.head`, `.stats`, `.flow`, `.mid` y `.bottom` usan CSS Grid con números distintos de columnas para distribuir cada banda. `.box` aplica un borde superior de 6 px cuyo color cambia con `:nth-child`, dando a los cinco pasos una codificación cromática. `.path` usa tipografía monoespaciada sobre fondo oscuro para representar las rutas, y `.foot` se ancla al pie con posición absoluta dentro del póster.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Encabezado y métricas",
+          "lineRange": [
+            51,
+            70
+          ],
+          "explanation": "El cuerpo abre con el título, el subtítulo que nombra las tres capacidades del módulo y dos insignias: 'v0.1.0 · paquete completo' y 'sin integrar en la app'. La fila de cinco métricas cuantifica el resumen: 5 capas, 2 dueños, 3 plantillas SQL, 2 suites de tests y 0 archivos de la app tocados. Este último dato resume gráficamente el aislamiento que README.md explica en prosa.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Flujo del avatar",
+          "lineRange": [
+            72,
+            79
+          ],
+          "explanation": "Cinco tarjetas numeradas describen el ciclo: configuración, SQL renderizado, core + Supabase, React + PWA y guardado seguro. La última recuerda que solo la RPC escribe `avatar_path` y que se limpia el objeto anterior, reflejando la decisión de seguridad explicada más adelante en el tour (pasos 8 y 10). Es la versión visual de la sección 'SQL generado' del README.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Dos dueños y storage",
+          "lineRange": [
+            81,
+            97
+          ],
+          "explanation": "Tres tarjetas confrontan `internal` (dueño `auth_user_id` sobre `platform_usernames`) y `member` (dueño `employee_id` vía `user_employee_links`), cada una con su patrón de ruta, frente a una tercera tarjeta de storage privado con icono de candado. Esta última enumera policies por carpeta propia, bypass de roles, ausencia de `update` directo y auditoría opcional. La disposición subraya que una misma UI atiende a ambos dueños mientras la seguridad vive en la capa de datos.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Estado del trabajo",
+          "lineRange": [
+            99,
+            115
+          ],
+          "explanation": "Una cuadrícula de ocho comprobaciones separa con iconos de color verde y ámbar lo completado de lo pendiente: no se ha importado en CONICA-RRHH y la migración SQL queda sujeta a revisión. El recuadro 'Siguiente paso' lista cinco acciones que coinciden con el checklist de integración del README. Es la traducción visual del estado 'paquete listo, sin integrar'.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Pie de página",
+          "lineRange": [
+            117,
+            120
+          ],
+          "explanation": "Una línea fija en la parte inferior acredita el póster como resumen visual generado localmente y lo fecha en noviembre de 2026. Cierra el contenedor `#poster`, el `<body>` y el `<html>`. No hay scripts: todo el contenido es estático y se mantiene editando el HTML.",
+          "tourOrder": 1
+        }
+      ]
+    },
+    "visual-resumen.html": {
+      "overview": "Panel HTML interactivo que amplía el póster con un mapa de capas navegable, un panel de detalle, un checklist persistente y tablas de criterios. Forma parte del paso 1 del tour junto a README.md y visual-poster.html, pero añade una capa de JavaScript vanilla que lee un arreglo `DATA` para renderizar cada bloque. Es documentación viva del estado del módulo, sin dependencias de la app destino.",
+      "sections": [
+        {
+          "title": "Head y variables CSS",
+          "lineRange": [
+            1,
+            13
+          ],
+          "explanation": "Define el documento en español con viewport adaptable y un bloque `:root` que centraliza la paleta en custom properties (`--bg`, `--ink`, `--blue`, `--teal`, `--amber`, etc.) y una sombra `--shadow`. Centralizar los colores permite cambiar el tema del panel tocando un solo lugar. El título lo identifica como 'Visual del estado del módulo'.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Estilos de la interfaz",
+          "lineRange": [
+            14,
+            75
+          ],
+          "explanation": "El resto del `<style>` construye el sistema visual: `.wrap` limita el ancho a 1180 px, `.stats` usa `auto-fit` para tarjetas adaptables, `.layer`/`.node` definen el mapa interactivo con estados `:hover` y `.active`, y `.panel` muestra el detalle sobre fondo oscuro. `.step:nth-child()` colorea las cinco etapas del flujo y `.check.done` tacha los elementos marcados. El uso de `clamp()` en `h1` y `minmax()` en las cuadrículas hace que el panel funcione también en pantallas pequeñas.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Encabezado y estadísticas",
+          "lineRange": [
+            78,
+            105
+          ],
+          "explanation": "El cuerpo muestra el título, tres chips de estado (versión, paquete listo, sin integrar) y las mismas cinco métricas del póster. A continuación aparece el contenedor vacío `#layers` que JavaScript rellenará, y un `#panel` con texto de bienvenida que explica su función. El contenedor vacío es la señal de que el mapa se genera en tiempo de ejecución desde `DATA`, no está escrito en el HTML.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Flujo y dos dueños",
+          "lineRange": [
+            107,
+            133
+          ],
+          "explanation": "Cinco pasos unidos por flechas repiten el ciclo configuración → SQL → core+Supabase → React → guardar, con la RPC como único punto de escritura. La sección de dueños muestra las rutas `<org>/internal/<auth_user_id>/...` y `<org>/member/<employee_id>/...` y añade una nota sobre el preset `connect-personnel` con `pathLayout: \"owner\"`. Este matiz es importante: ilustra que el formato de ruta es configurable y no una constante de la UI.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Checklist y criterios",
+          "lineRange": [
+            135,
+            151
+          ],
+          "explanation": "Un contenedor `#checklist` vacío espera el mismo tratamiento dinámico que el mapa. La tabla de criterios enlaza cada requisito con su ubicación real (`useAvatarEditor`, `getAvatarInitials`, `ProfileModal`, `styles.css`, tipos de `AvatarOwner`). El pie reitera que el material se generó sin modificar la app destino.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Datos del mapa del módulo",
+          "lineRange": [
+            154,
+            195
+          ],
+          "explanation": "La constante `DATA` organiza siete capas —Configuración, Core puro, Adaptadores Supabase, React + PWA, SQL parametrizable, Tests y verificación, e Integración pendiente— con una descripción y una lista de nodos. Cada nodo lleva `name`, `files`, un flag `done` y un `detail`, lo que permite al script decidir el color del indicador y el texto del panel. Incluir la capa de integración con `done: false` mantiene visible la frontera entre paquete terminado y trabajo futuro.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Lista de verificaciones",
+          "lineRange": [
+            197,
+            205
+          ],
+          "explanation": "El arreglo `CHECKS` contiene las siete tareas de integración que también aparecen en el README. Guardarlas como datos separados permite que el renderizado del checklist y su persistencia sean genéricos: el índice de cada cadena se usa como clave en `localStorage`. Es un patrón sencillo de separar contenido de presentación.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Renderizado del mapa",
+          "lineRange": [
+            207,
+            231
+          ],
+          "explanation": "Obtiene `#layers` y `#panel`, recorre `DATA` y crea una tarjeta `.layer` por capa con su título y descripción. Por cada nodo genera un `<button class=\"node\">` con un punto verde o ámbar según `done`, y le asigna un listener que resalta el botón activo y rellena el panel con nombre, detalle, archivos y estado. El uso de `textContent` para los textos y `innerHTML` solo para el marcado interno muestra una atención mínima a evitar la inyección de contenido no controlado.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Checklist persistente",
+          "lineRange": [
+            233,
+            249
+          ],
+          "explanation": "Recorre `CHECKS` y construye etiquetas con un checkbox. Lee `localStorage.getItem('apk-check-' + i) === '1'` al iniciar para restaurar el estado y añade la clase `done` cuando corresponde. En cada cambio alterna la clase y guarda '1' o '0'; el prefijo `apk-` evita colisiones con otras claves de la app anfitriona, el mismo criterio de prefijado que se usa en `styles.css`.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Cierre del documento",
+          "lineRange": [
+            250,
+            252
+          ],
+          "explanation": "Finaliza el bloque `<script>` y el documento HTML. Todo el comportamiento reside en los dos bloques anteriores, sin librerías externas ni llamadas de red. El archivo puede abrirse directamente en un navegador como resumen autónomo del proyecto.",
+          "tourOrder": 1
+        }
+      ]
+    },
+    "package.json": {
+      "overview": "Define la identidad y el contrato de distribución del paquete: nombre, versión 0.1.0, tipo ESM, los cuatro entry points públicos y los archivos que se publican. Los scripts concentran typecheck, test, build, renderizado SQL y el comando agregado `check`, que es la verificación recomendada en el README. Es una de las piezas del paso 2 del tour (API pública y empaquetado), junto con tsconfig.json y los tres barrels.",
+      "sections": [
+        {
+          "title": "Identidad del paquete",
+          "lineRange": [
+            1,
+            6
+          ],
+          "explanation": "Fija `name`, `version` 0.1.0, una descripción en español, el campo `type` con valor `module` y licencia MIT. El tipo ESM es determinante: obliga a que las importaciones internas usen extensiones `.js` explícitas, como hacen los barrels. Sin esta declaración, Node trataría los `.js` como CommonJS y el contrato de exports no funcionaría igual.",
+          "tourOrder": 2
+        },
+        {
+          "title": "Entry points y exports",
+          "lineRange": [
+            7,
+            23
+          ],
+          "explanation": "`main` y `types` apuntan al barrel de core en `dist`, y el mapa `exports` expone cuatro rutas: `.` (core), `./react`, `./supabase` y `./styles.css`. Cada entry point de código declara `types` antes que `default`, para que TypeScript resuelva las declaraciones y el runtime cargue el JavaScript. No hay un `src/index.ts` global: la superficie pública son exactamente esos tres barrels, decisión que el tour destaca en el paso 2.",
+          "tourOrder": 2
+        },
+        {
+          "title": "Archivos publicados",
+          "lineRange": [
+            24,
+            30
+          ],
+          "explanation": "La lista `files` limita el paquete a `dist`, `sql`, los dos JSON de configuración y el README. Esto incluye las plantillas SQL y los presets como datos distribuibles, pero excluye tests, scripts de desarrollo y el propio `package.json` (que npm incluye por defecto). Es una forma de mantener el artefacto publicado pequeño y predecible.",
+          "tourOrder": 2
+        },
+        {
+          "title": "Scripts de verificación",
+          "lineRange": [
+            31,
+            37
+          ],
+          "explanation": "`typecheck` compila dos veces: la librería con tsconfig.json y las pruebas con tsconfig.test.json. `test` usa `tsx --test tests/*.test.ts`, `build` emite con `tsc` y luego copia assets, y `sql:render` invoca la CLI `.mts`. `check` encadena typecheck, test y build en un solo comando, que es el que recomienda el README antes de cualquier integración.",
+          "tourOrder": 2
+        },
+        {
+          "title": "Peer dependencies opcionales",
+          "lineRange": [
+            38,
+            49
+          ],
+          "explanation": "React y `@supabase/supabase-js` se declaran como peerDependencies con versión mínima, y `peerDependenciesMeta` las marca como `optional: true`. Así una app que solo usa el core no está obligada a instalar React ni Supabase, mientras que quien usa los adaptadores ya tiene esas librerías en su proyecto. El contrato de tipos, por tanto, no fuerza dependencias en los consumidores de una sola capa.",
+          "tourOrder": 2
+        },
+        {
+          "title": "Dependencias de desarrollo",
+          "lineRange": [
+            50,
+            58
+          ],
+          "explanation": "Incluye PGlite para ejecutar SQL real en los tests de permisos, las librerías de Supabase y React para desarrollar y probar los adaptadores, `tsx` para ejecutar TypeScript sin compilación previa y TypeScript 5.9. Las versiones con caret permiten actualizaciones menores. La presencia de `@electric-sql/pglite` explica por qué el README afirma que los tests de permisos usan SQL real con solo Auth simulado.",
+          "tourOrder": 2
+        }
+      ]
+    },
+    "src/core/index.ts": {
+      "overview": "Barrel de la API pública del núcleo: reúne en un solo módulo los tipos, errores, validación, rutas y configuración. Es el entry point que `package.json` asocia a `avatar-profile-kit` y el que usan las capas React y Supabase para importar el vocabulario compartido. Forma parte del paso 2 del tour y es la puerta de entrada al paso 3 (tipos y errores compartidos).",
+      "sections": [
+        {
+          "title": "Barrel del núcleo",
+          "lineRange": [
+            1,
+            5
+          ],
+          "explanation": "Cinco sentencias `export *` reexponen `types.js`, `errors.js`, `validation.js`, `path.js` y `config.js` sin lógica adicional. El orden empieza por los tipos y errores, que son las piezas más dependidas, y termina por la configuración, que se apoya en ellos. Las extensiones `.js` son obligatorias porque el paquete se publica como ESM con resolución NodeNext/Bundler: el compilador las reescribe tal cual y Node las resuelve contra los `.js` emitidos en `dist`.",
+          "tourOrder": 2
+        }
+      ]
+    },
+    "src/react/index.ts": {
+      "overview": "Barrel de la superficie pública de React: expone los componentes de avatar y diálogo, el hook editor, las etiquetas por defecto y el botón de instalación PWA. Es el entry point `avatar-profile-kit/react` declarado en package.json y concentra todo lo que la app consumidora importa de la UI. Se estudia en el paso 2 del tour y se desarrolla en los pasos 12 a 14.",
+      "sections": [
+        {
+          "title": "Barrel de React y PWA",
+          "lineRange": [
+            1,
+            7
+          ],
+          "explanation": "Siete `export *` cubren `Avatar.js`, `labels.js`, `useAvatar.js`, `ProfileModal.js`, `ProfileDialog.js`, `PwaInstall.js` y, como caso especial, `../pwa/install.js`. Esta última línea cruza al directorio `pwa` porque la detección de instalación es lógica de navegador sin JSX y se mantuvo fuera de `react`. Al igual que en los otros barrels, las extensiones `.js` explícitas garantizan la resolución ESM en NodeNext y en bundlers. Un único barrel permite que la app importe todo desde `avatar-profile-kit/react` sin conocer la estructura interna de `src/react/`.",
+          "tourOrder": 2
+        }
+      ]
+    },
+    "src/supabase/index.ts": {
+      "overview": "Barrel del adaptador de Supabase: reúne el alias de cliente, el almacenamiento privado y el repositorio que persiste la ruta mediante RPC. Es el entry point `avatar-profile-kit/supabase` y la capa que aísla a React de los detalles del bucket y de la tabla. Aparece en el paso 2 del tour y se explica en los pasos 7 y 8.",
+      "sections": [
+        {
+          "title": "Barrel de Supabase",
+          "lineRange": [
+            1,
+            3
+          ],
+          "explanation": "Tres exportaciones reexponen `client.js`, `storage.js` y `repository.js`, que corresponden exactamente a las tres responsabilidades del adaptador descritas en el tour: un tipo de cliente flexible, la gestión de bytes en el bucket privado y la lectura/escritura autorizada de metadatos. No se exporta nada del core desde aquí: quien necesite `AvatarConfig` lo importa desde el entry point raíz, manteniendo las capas separadas. Las extensiones `.js` siguen la misma convención ESM de los otros barrels.",
+          "tourOrder": 2
+        }
+      ]
+    },
+    "tsconfig.json": {
+      "overview": "Configuración base de compilación de la librería: selecciona ES2022 y resolución Bundler, activa modo estricto y comprobaciones adicionales, y emite JavaScript más declaraciones a `dist`. Complementa el contrato de `package.json` en el paso 2 del tour, porque sin declarations ni el `outDir` correcto los exports apuntarían a archivos inexistentes. `tsconfig.test.json` hereda de este archivo para las pruebas.",
+      "sections": [
+        {
+          "title": "Objetivo y resolución",
+          "lineRange": [
+            2,
+            6
+          ],
+          "explanation": "`target` y `lib` fijan ES2022 más las APIs DOM e Iterable, necesarias porque el código usa `crypto.randomUUID` y el componente React manipula el navegador. `module: ESNext` con `moduleResolution: Bundler` favorece la resolución moderna; combinado con las importaciones `.js` explícitas de los barrels, el resultado también funciona cuando Node carga el paquete publicado. Es una elección deliberadamente compatible con dos entornos.",
+          "tourOrder": 2
+        },
+        {
+          "title": "JSX, strict y declaraciones",
+          "lineRange": [
+            7,
+            13
+          ],
+          "explanation": "`jsx: react-jsx` habilita la transformación automática, de modo que los `.tsx` no necesitan importar `React` solo por el JSX. `strict` y `noUncheckedIndexedAccess` endurecen el tipado: este último obliga a tratar los accesos por índice como potencialmente `undefined`, algo relevante en el manejo de arreglos de rutas y MIME. Con `noEmit: false`, `declaration`, `declarationMap` y `sourceMap`, la compilación produce artefactos publicables con trazabilidad hasta el fuente.",
+          "tourOrder": 2
+        },
+        {
+          "title": "Salida y alcance",
+          "lineRange": [
+            14,
+            22
+          ],
+          "explanation": "`outDir: dist` y `rootDir: src` hacen que la estructura de `src` se reproduzca exactamente en `dist`, coincidiendo con las rutas de `exports` del package.json. `esModuleInterop` y `verbatimModuleSyntax` refuerzan el comportamiento ESM: este último exige distinguir importaciones de tipo con `type`, evitando imports que se eliminan silenciosamente. `include` limita la compilación a `src/**/*` y `exclude` aparta `dist`, `node_modules`, `tests` y `scripts`, que se comprueban por separado con tsconfig.test.json.",
+          "tourOrder": 2
+        }
+      ]
+    },
+    "src/core/errors.ts": {
+      "overview": "Contrato de errores compartido por todo el kit: un conjunto cerrado de códigos, la clase `AvatarKitError` que conserva la causa original y una utilidad para convertir fallos desconocidos en texto legible. Se estudia en el paso 3 del tour junto con types.ts, y es la pieza que permite a los adaptadores de Supabase y a la UI React comunicar fallos de forma uniforme.",
+      "sections": [
+        {
+          "title": "Códigos de error",
+          "lineRange": [
+            1,
+            11
+          ],
+          "explanation": "`AvatarErrorCode` es una unión de diez literales que cubre desde `INVALID_CONFIG`, `INVALID_FILE`, `FILE_TOO_LARGE` y `UNSUPPORTED_TYPE` hasta fallos de `UPLOAD_FAILED`, `REMOVE_FAILED`, `SIGN_FAILED`, `SAVE_FAILED`, `LOAD_FAILED` y `FORBIDDEN`. Al ser un conjunto cerrado, TypeScript obliga a tratar cada variante cuando se estrecha el tipo y descarta cadenas arbitrarias. La separación entre errores de validación (core) y errores de operación (Storage/RPC) anticipa las capas del tour 7 y 8.",
+          "tourOrder": 3
+        },
+        {
+          "title": "Clase AvatarKitError",
+          "lineRange": [
+            13,
+            21
+          ],
+          "explanation": "La clase extiende `Error`, fija `name` a 'AvatarKitError' y guarda el `code` como propiedad `readonly`. El constructor usa `super(message, cause === undefined ? undefined : { cause })` para preservar el error original solo cuando existe, apoyándose en la opción estándar `cause` de ES2022. Mantener la causa es clave en los adaptadores: un fallo de Storage puede envolver un error de Supabase sin perder el diagnóstico, pero la UI solo necesita mostrar el mensaje controlado.",
+          "tourOrder": 3
+        },
+        {
+          "title": "Utilidad errorMessage",
+          "lineRange": [
+            23,
+            27
+          ],
+          "explanation": "Devuelve el mensaje de un `AvatarKitError`, o de cualquier `Error` con mensaje, y usa `fallback` como último recurso. El parámetro `unknown` obliga a comprobar `instanceof` antes de acceder a `.message`, evitando suposiciones sobre valores lanzados por código externo. Esta función permite que los componentes muestren texto sin ramificar por cada tipo de error, con un valor por defecto legible para fallos inesperados.",
+          "tourOrder": 3
+        }
+      ]
+    },
+    "src/core/types.ts": {
+      "overview": "Vocabulario de datos del kit y el nodo más dependido del grafo según el tour. Define las dos claves de dueño, la configuración SQL y de columnas, los tipos de ruta y la forma de `AvatarOwner`, que deliberadamente no expone datos sensibles a la UI. Se estudia en el paso 3, se concreta en los JSON del paso 4 y consumen las capas React y Supabase.",
+      "sections": [
+        {
+          "title": "Dueños y formatos MIME",
+          "lineRange": [
+            1,
+            9
+          ],
+          "explanation": "`AvatarOwnerKind` es la unión `'internal' | 'member'` y `AVATAR_OWNER_KINDS` su contraparte en tiempo de ejecución, útil para iterar sin duplicar la lista. El comentario inicial subraya que cada proyecto decide a qué tabla corresponde cada dueño: las claves son neutras por diseño. `AvatarMime` empareja un MIME con su extensión, relación que luego usa la validación de archivos y la construcción de rutas.",
+          "tourOrder": 3
+        },
+        {
+          "title": "Configuración de columnas y membership",
+          "lineRange": [
+            11,
+            35
+          ],
+          "explanation": "Tres interfaces describen tablas y columnas como cadenas: `AvatarColumnConfig` para la tabla con `avatar_path`, `AvatarMembershipConfig` para roles y `AvatarMemberLinkConfig` para resolver `member_id` desde `user_id`. El campo opcional `activeColumn` admite `string | null`, reflejando que no todos los proyectos filtran por activo. Estas cadenas se validan después con patrones estrictos antes de interpolarse en SQL, como explica el paso 4 del tour.",
+          "tourOrder": 3
+        },
+        {
+          "title": "SQL y diseño de ruta",
+          "lineRange": [
+            37,
+            46
+          ],
+          "explanation": "`AvatarSqlConfig` controla la creación del esquema privado, el prefijo de las funciones de policy y la función de auditoría opcional; el comentario enumera los sufijos generados (`_is_member`, `_has_role`, `_is_master`, `_owner_id`, `_is_valid_path`). `AvatarPathLayout` es la unión `'kind' | 'owner'`, que decide si la ruta incluye el segmento de rol. Este tipo es el que permite al preset `connect-personnel` adoptar el formato `<org>/<owner>/avatar/...` sin tocar el código.",
+          "tourOrder": 3
+        },
+        {
+          "title": "Configuración principal",
+          "lineRange": [
+            48,
+            70
+          ],
+          "explanation": "`AvatarConfig` reúne bucket, límites de tamaño y MIME, RPC, roles de administración, `masterRole`, flags de propiedad y las secciones `schemas`, `membership`, `memberLink` y `sql`. Los comentarios aclaran que `adminRoles` da lectura amplia, que `masterRole: null` desactiva el bypass y que `memberOwnerIsAuthUser` aplica cuando el id del perfil member es el propio `auth.uid()`. Es el tipo que `configFromJson` produce y que todos los adaptadores reciben, por lo que cualquier cambio aquí afecta a toda la API.",
+          "tourOrder": 3
+        },
+        {
+          "title": "Identidad y ruta en la UI",
+          "lineRange": [
+            72,
+            86
+          ],
+          "explanation": "`AvatarOwner` declara solo `kind`, `organizationId`, `ownerId` y `name`, y el comentario advierte explícitamente que nunca incluye `org_id` en la UI: es el cumplimiento tipado del criterio 'sin pago, estado activo ni org_id'. `AvatarPathParts` es la forma interpretada de una ruta, con `kind: null` cuando el layout es `owner`. Juntos definen la frontera entre lo que la interfaz puede ver y lo que la capa de datos transforma.",
+          "tourOrder": 3
+        }
+      ]
+    },
+    "avatar-profile.config.json": {
+      "overview": "Preset propio del kit y archivo rector por defecto que se edita en el paso 4 del tour. Fija un bucket privado `connect-avatars`, límite de 2 MB, MIME JPG/PNG/WebP, la RPC `apk_set_avatar_path` y los esquemas `internal`/`member`. Sus valores alimentan `configFromJson`, el renderizado de SQL y los adaptadores, por lo que cambiar aquí una tabla o un rol propaga el cambio a todas las capas.",
+      "sections": [
+        {
+          "title": "Bucket y límites",
+          "lineRange": [
+            2,
+            15
+          ],
+          "explanation": "Define `bucket: connect-avatars`, carpeta `avatar`, TTL de 300 segundos para URLs firmadas y `maxBytes: 2097152` (2 MiB). `allowedMimeTypes` mapea JPG, PNG y WebP a sus extensiones, y `rpcSetAvatarPath` nombra la única función permitida para escribir la ruta. `policyPrefix: apk_avatar` prefija los helpers SQL, `adminRoles` da lectura amplia a `admin`, `masterRole: null` desactiva el bypass y `memberOwnerIsAuthUser: false` exige resolver el dueño vía `memberLink`.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Esquemas internal y member",
+          "lineRange": [
+            16,
+            31
+          ],
+          "explanation": "Ambos esquemas usan `organization_id`, `avatar_path` y `display_name`, pero cambian la tabla y la columna dueño: `public.platform_usernames`/`auth_user_id` para `internal`, y `public.employee_profiles`/`employee_id` para `member`. Esta simetría permite que un mismo adaptador resuelva la tabla según `owner.kind`. Los nombres incluyen el esquema `public.` porque se interpolarán en SQL y deben ser identificadores calificados válidos.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Membresía y enlace de miembro",
+          "lineRange": [
+            32,
+            45
+          ],
+          "explanation": "`membership` apunta a `public.memberships` con `user_id`, `roles` y `active`, y sirve a los helpers de roles de las policies. `memberLink` apunta a `public.user_employee_links` y mapea `user_id` a `employee_id`, también con `active`. Como `memberOwnerIsAuthUser` es `false`, este enlace es obligatorio: es la pieza que traduce el `auth.uid()` de la sesión al `employee_id` que identifica al dueño del avatar.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Opciones SQL",
+          "lineRange": [
+            46,
+            49
+          ],
+          "explanation": "`createPrivateSchema: true` indica a las plantillas que creen el esquema donde viven las funciones auxiliares. `auditFunction: private.record_audit` activa los triggers de auditoría opcionales sobre `avatar_path`; el README indica que debe ponerse a `null` en proyectos sin auditoría. Estos dos valores muestran que el JSON no solo describe datos, sino también qué código SQL se genera.",
+          "tourOrder": 4
+        }
+      ]
+    },
+    "avatar-profile.connect-personnel.config.json": {
+      "overview": "Preset alternativo del paso 4 del tour, compatible con la migración de avatares ya iniciada en CONNECT. Cambia el bucket a `connect-personnel`, adopta `pathLayout: \"owner\"` y amplía `adminRoles` con `hr`, demostrando que el kit se adapta al esquema de la app sin modificar su código. Comparte la mayoría de los valores con el preset propio; las diferencias están concentradas al inicio del archivo.",
+      "sections": [
+        {
+          "title": "Bucket, ruta y roles",
+          "lineRange": [
+            2,
+            16
+          ],
+          "explanation": "Las diferencias respecto al preset propio aparecen aquí: `bucket: connect-personnel`, `pathLayout: owner` (la ruta omite el segmento `internal|member`), `policyPrefix: apk_avatar_personnel` para no colisionar con otros helpers y `adminRoles: [\"admin\", \"hr\"]`. El resto —TTL, 2 MB, MIME, RPC, `masterRole: null` y `memberOwnerIsAuthUser: false`— es igual. El prefijo distinto es un detalle importante porque las funciones SQL se crean en el esquema privado y dos presets desplegados juntos no deben sobrescribirse.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Esquemas de perfil",
+          "lineRange": [
+            17,
+            32
+          ],
+          "explanation": "Se mantienen `public.platform_usernames` con `auth_user_id` y `public.employee_profiles` con `employee_id`, además de las columnas comunes de organización, avatar y nombre. Que esta sección sea idéntica a la del preset propio confirma que el cambio de `pathLayout` afecta solo a la forma de la ruta en Storage, no a la estructura de las tablas.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Membresía y enlace de miembro",
+          "lineRange": [
+            33,
+            46
+          ],
+          "explanation": "`membership` y `memberLink` reproducen los valores del preset propio: `public.memberships` con `roles`/`active` y `public.user_employee_links` con `employee_id`/`active`. La consecuencia es que los helpers SQL de roles y la resolución del dueño member funcionan igual en ambos presets; solo cambian el bucket, el prefijo y la forma de la ruta. Esto facilita migrar de un preset a otro sin reescribir la lógica de permisos.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Opciones SQL",
+          "lineRange": [
+            47,
+            50
+          ],
+          "explanation": "Cierra con `createPrivateSchema: true` y `auditFunction: private.record_audit`, idénticos al preset propio. Conservar la función de auditoría permite que, incluso con un bucket y un layout de ruta distintos, los cambios en `avatar_path` sigan registrándose. El README señala que `masterRole` puede activarse cambiando su valor a `\"master\"`, opción que aquí permanece desactivada con `null`.",
+          "tourOrder": 4
+        }
+      ]
+    },
+    "src/core/config.ts": {
+      "overview": "Centro de normalización y validación de la configuración del kit. Toma los presets en JSON (como avatar-profile.config.json o connect-personnel), los fusiona con valores sensatos por defecto y comprueba que todo identificador que luego se interpolará en SQL sea seguro. Es la pieza que conecta el paso 4 del recorrido con el renderizador de plantillas y con las pruebas del núcleo, porque de aquí dependen la ruta del avatar, los roles y los nombres de tablas.",
+      "sections": [
+        {
+          "title": "Defaults y tipos de entrada",
+          "lineRange": [
+            1,
+            58
+          ],
+          "explanation": "El archivo importa los tipos compartidos, los límites por defecto de validation.ts y avatarPathRegex de path.ts, lo que muestra que la configuración es el punto de encuentro del núcleo. `DEFAULT_CONFIG` fija bucket `avatars`, layout `kind`, TTL de 300 segundos, RPC `apk_set_avatar_path`, esquemas internal/member y la tabla de membership. `AvatarConfigInput` usa `Partial` y `Omit` para permitir que el usuario sobrescriba solo lo que necesita, manteniendo las estructuras anidadas opcionales. Este diseño admite tanto un preset mínimo como una configuración completa sin duplicar la forma del tipo.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Identificadores SQL seguros",
+          "lineRange": [
+            60,
+            74
+          ],
+          "explanation": "`assertIdentifier` aplica el patrón estricto `^[A-Za-z_][A-Za-z0-9_]*$` y lanza un error con etiqueta descriptiva si falla. `qualifiedTable` exige exactamente dos partes `schema.tabla`, valida cada una por separado y devuelve la forma entre comillas dobles. Esta validación es la barrera contra inyección SQL: la configuración es datos (JSON), no código ejecutable, y todos los valores acabarán interpolados en plantillas. El uso de `as [string, string]` refleja que TypeScript no estrecha el tipo tras comprobar `length`, por lo que se fuerza la tupla de forma explícita.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Fusión de configuración",
+          "lineRange": [
+            76,
+            96
+          ],
+          "explanation": "`defineAvatarConfig` combina los defaults con la entrada en capas: primero los esquemas internal y member, luego el objeto principal, membership, memberLink y sql. El operador `??` en `policyPrefix` respeta tres niveles de precedencia (sql.policyPrefix, policyPrefix general, default), evitando que un valor `undefined` sobrescriba silenciosamente el default. `memberLink` se trata aparte porque `null` es un valor válido, no una ausencia. Al final se llama a `assertSqlSafeConfig`, de modo que ninguna configuración manufacturada pueda eludir la validación.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Validación integral",
+          "lineRange": [
+            98,
+            140
+          ],
+          "explanation": "`assertSqlSafeConfig` verifica con regex el bucket, el prefijo de policies, el nombre de RPC y los límites numéricos, además de exigir al menos un rol administrador. Después valida las tablas cualificadas de internal, member, membership y el vínculo opcional, y la forma de `auditFunction` como `schema.funcion`. Un bucle recorre todas las columnas usadas en SQL y las pasa por `assertIdentifier`, incluyendo las columnas activas opcionales. La última llamada a `avatarPathRegex(config)` valida indirectamente la carpeta y las extensiones, centralizando así la comprobación de cada dato que llega a una plantilla.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Entrada desde JSON",
+          "lineRange": [
+            142,
+            145
+          ],
+          "explanation": "`configFromJson` es la frontera de confianza para archivos externos: rechaza `null`, arrays y primitivos antes de hacer un cast a `AvatarConfigInput`. Delega toda la normalización y validación en `defineAvatarConfig`, de forma que la CLI de renderizado no necesita conocer los detalles. Es el único punto por el que entra la configuración del usuario al pipeline de generación de SQL.",
+          "tourOrder": 4
+        }
+      ]
+    },
+    "src/core/path.ts": {
+      "overview": "Utilidades puras para el ciclo de vida de las rutas de Storage: construyen la ruta privada del avatar, la analizan, la validan contra la configuración y generan la expresión regular que usarán las policies RLS. Junto con validation.ts define el contrato de qué se sube y cómo se nombra cada objeto, antes de que la capa React o el adaptador de Supabase interactúen con el bucket. Es uno de los nodos más dependidos del núcleo y el paso 5 del recorrido lo presenta como complemento de la configuración validada.",
+      "sections": [
+        {
+          "title": "Constantes y tipos de ruta",
+          "lineRange": [
+            1,
+            14
+          ],
+          "explanation": "`UUID` es un fragmento de regex para IDs con guiones, mientras que `SAFE_FOLDER` restringe la carpeta a hashed minúsculas, dígitos, guion y guion bajo. `PathConfig` acota la configuración que estas funciones necesitan, evitando acoplarlas al objeto completo. `BuildAvatarPathInput` hace obligatorios organización, tipo de dueño, dueño y MIME, y deja `uniqueId` opcional para poder inyectar un valor determinista en las pruebas.",
+          "tourOrder": 5
+        },
+        {
+          "title": "Construcción de rutas",
+          "lineRange": [
+            16,
+            35
+          ],
+          "explanation": "`buildAvatarPath` valida la carpeta y resuelve la extensión buscando el MIME en la lista permitida; si no coincide, falla antes de producir una ruta inválida. El identificador único viene de `globalThis.crypto.randomUUID()` con una comprobación de existencia para funcionar entre plataformas (Node y navegador). La ruta final sigue dos layouts: `kind` incluye el tipo de dueño y `owner` lo omite, compatibilidad necesaria con la migración en curso descrita en el recorrido. El comentario inicial documenta ambos formatos con ejemplos.",
+          "tourOrder": 5
+        },
+        {
+          "title": "Análisis de rutas",
+          "lineRange": [
+            37,
+            61
+          ],
+          "explanation": "`parseAvatarPath` construye dos expresiones regulares a partir de `UUID`: una para el formato con tipo de propietario y otra para el formato solo con dueño. Intenta primero la variante con `kind` y rellena `AvatarPathParts` con organización, tipo, dueño y nombre de archivo reconstruido. Si no hay coincidencia devuelve `null`, señalando que la cadena no es una ruta de avatar reconocible; este diseño evita lanzar excepciones en comprobaciones defensivas.",
+          "tourOrder": 5
+        },
+        {
+          "title": "Validación con configuración",
+          "lineRange": [
+            63,
+            78
+          ],
+          "explanation": "`isAvatarPath` combina el análisis sintáctico con la configuración activa: exige que la presencia o ausencia de `kind` coincida con `pathLayout` y que la carpeta de la ruta sea la esperada (índice 2 u 3 según el layout). Además comprueba que el nombre de archivo termine con una extensión permitida. Fijarse en la posición del segmento en lugar de reutilizar la regex es necesario porque la carpeta es configurable y no forma parte del patrón genérico de `parseAvatarPath`.",
+          "tourOrder": 5
+        },
+        {
+          "title": "Regex para policies",
+          "lineRange": [
+            80,
+            88
+          ],
+          "explanation": "`avatarPathRegex` genera la expresión que se inyectará en la policy de Storage a partir de la configuración. Construye la lista de extensiones con `join('|')` y elige la base según el layout, siempre con anclas `^` y `$` para impedir prefijos o sufijos arbitrarios. config.ts la invoca durante la validación, de modo que una carpeta insegura se detecta antes de renderizar SQL.",
+          "tourOrder": 5
+        },
+        {
+          "title": "Iniciales del nombre",
+          "lineRange": [
+            90,
+            96
+          ],
+          "explanation": "`getAvatarInitials` es el respaldo visual cuando no hay imagen: normaliza espacios, toma la primera letra de las dos primeras palabras y la convierte a mayúsculas. Si solo hay una palabra usa su primer carácter, y con una cadena vacía devuelve `?`. `Array.from` en lugar de indexación por bytes respeta mejor los caracteres Unicode; es un detalle importante para nombres con tildes o emojis.",
+          "tourOrder": 5
+        }
+      ]
+    },
+    "src/core/validation.ts": {
+      "overview": "Define la política de entrada de archivos del kit: tamaño máximo, tipos MIME aceptados y la conversión de MIME a extensión. Sus constantes son la fuente de los defaults que luego consumen config.ts, path.ts y la capa React. El paso 5 del recorrido la describe como el complemento de path.ts: la una filtra qué se puede subir y la otra decide cómo se nombra el objeto en el bucket privado.",
+      "sections": [
+        {
+          "title": "Límites y MIME por defecto",
+          "lineRange": [
+            1,
+            9
+          ],
+          "explanation": "El módulo importa solo tipos de `types.js`, por lo que no depende de valores runtime del resto del núcleo. `DEFAULT_MAX_AVATAR_BYTES` fija 2 MB con aritmética explícita (`2 * 1024 * 1024`) en lugar de un número opaco. `DEFAULT_ALLOWED_MIMES` es un array de solo lectura con JPG, PNG y WebP y sus extensiones, y sirve de fallback compartido cuando la configuración no especifica nada.",
+          "tourOrder": 5
+        },
+        {
+          "title": "MIME y extensión",
+          "lineRange": [
+            11,
+            19
+          ],
+          "explanation": "`isAllowedAvatarMime` compara en minúsculas contra la lista configurada y devuelve un booleano; `avatarExtension` reutiliza la misma búsqueda pero devuelve la extensión o `null`. Ambos aceptan un `Pick` con `allowedMimeTypes`, lo que mantiene las funciones testeables y desacopladas del resto de `AvatarConfig`. La normalización a minúsculas evita rechazar tipos MIME escritos con distinta capitalización.",
+          "tourOrder": 5
+        },
+        {
+          "title": "Validación de archivo",
+          "lineRange": [
+            21,
+            35
+          ],
+          "explanation": "`validateAvatarFile` devuelve un mensaje de error en español o `null` cuando el archivo es aceptable, un patrón cómodo para mostrar errores directamente en la UI. Comprueba primero existencia y tamaño positivo, después el límite de bytes y finalmente que el tipo MIME esté permitido. El comentario advierte de que la misma información debe declararse en el bucket (file_size_limit y allowed_mime_types) y en la policy de Storage: esta validación es solo de cliente y no sustituye a las reglas del servidor.",
+          "tourOrder": 5
+        }
+      ]
+    },
+    "tests/core.test.ts": {
+      "overview": "Especificación ejecutable de las utilidades del núcleo presentadas en los pasos 4 y 5 del recorrido. Usa el test runner nativo de Node (`node:test`) y aserciones estrictas para cubrir iniciales, validación de archivos, formatos de ruta y rechazo de configuraciones inseguras. Al agrupar config.ts, path.ts y validation.ts en un mismo archivo confirma que son un clúster acoplado y sirve de red de seguridad antes de tocar el SQL generado.",
+      "sections": [
+        {
+          "title": "Imports y UUID fijo",
+          "lineRange": [
+            1,
+            7
+          ],
+          "explanation": "El archivo importa `node:test` y `node:assert/strict`, por lo que las pruebas corren sin frameworks externos. Las importaciones del núcleo usan extensión `.js` explícita para resolver bajo ESM/NodeNext, igual que los barrels del paquete. La constante `UUID` es un identificador determinista que permite comparar rutas completas sin depender de aleatoriedad.",
+          "tourOrder": 6
+        },
+        {
+          "title": "Iniciales y archivos",
+          "lineRange": [
+            9,
+            22
+          ],
+          "explanation": "El primer test comprueba `getAvatarInitials` con dos nombres, espacios redundantes, un solo nombre y una cadena vacía. El segundo valida el contrato de `validateAvatarFile`: acepta 2 MB exactos, rechaza 1 byte más con un mensaje que menciona los MB, rechaza `image/gif` y exige seleccionar archivo si el valor es `null`. `assert.match` verifica el texto de error en lugar de compararlo literalmente, haciendo la prueba resistente a cambios de redacción.",
+          "tourOrder": 6
+        },
+        {
+          "title": "Ruta cerrada y verificable",
+          "lineRange": [
+            24,
+            41
+          ],
+          "explanation": "Este test fija `uniqueId` y construye una ruta completa en layout `kind`, comprobando que el resultado coincide carácter por carácter con el formato documentado. Después valida que `isAvatarPath` la acepta, que `parseAvatarPath` recupera `member` y que se rechazan tanto una ruta del sistema (`/etc/passwd`) como una extensión no permitida (`x.gif`). La última aserción usa una regex escapada para verificar que la expresión generada termina con el grupo de extensiones `jpg|png|webp`, protegiendo la policy de Storage.",
+          "tourOrder": 6
+        },
+        {
+          "title": "Variante owner-only",
+          "lineRange": [
+            43,
+            51
+          ],
+          "explanation": "Define una configuración alternativa con bucket `connect-personnel` y `pathLayout: 'owner'` para reflejar el preset de migración descrito en el recorrido. Verifica que la ruta omite el segmento de tipo, que `isAvatarPath` la acepta con esa configuración y que `parseAvatarPath` devuelve `kind: null`. También comprueba que una ruta con tipo deja de ser válida bajo el layout owner, demostrando que la validación distingue ambos formatos.",
+          "tourOrder": 6
+        },
+        {
+          "title": "Config sensible y rechazo",
+          "lineRange": [
+            53,
+            64
+          ],
+          "explanation": "El último test confirma que `defineAvatarConfig` sobrescribe bucket y roles respetando los defaults de tamaño. Las aserciones con `assert.throws` comprueban que un bucket con `;drop` se rechaza por nombre inválido y que una tabla con SQL inyectado falla con el mensaje de identificador seguro. Finalmente `configFromJson(null)` debe rechazarse, cerrando el ciclo de validación de la frontera de confianza.",
+          "tourOrder": 6
+        }
+      ]
+    },
+    "tsconfig.test.json": {
+      "overview": "Configuración de TypeScript específica para pruebas y scripts. Hereda las reglas estrictas del tsconfig base, desactiva la emisión y amplía el directorio raíz para poder incluir tests y scripts junto al código fuente. Es la base del script `typecheck` y, como explica el paso 6, permite compartir la compilación de la librería sin duplicar opciones.",
+      "sections": [
+        {
+          "title": "Herencia y opciones",
+          "lineRange": [
+            1,
+            6
+          ],
+          "explanation": "`extends: ./tsconfig.json` preserva ES2022, strict y `noUncheckedIndexedAccess` en todo lo que compilan las pruebas. `noEmit: true` evita generar `.js` o declaraciones a partir de tests y scripts, que no forman parte del paquete publicado. `rootDir: '.'` es necesario porque ahora hay archivos fuera de `src` y TypeScript exige que todos quepan dentro de la raíz declarada.",
+          "tourOrder": 6
+        },
+        {
+          "title": "Inclusiones",
+          "lineRange": [
+            7,
+            8
+          ],
+          "explanation": "El array `include` añade `tests/**/*` y `scripts/**/*` a `src/**/*`. Así el typecheck cubre también la CLI `.mts` que renderiza SQL, no solo la librería. Es una forma mínima de ampliar el alcance sin mantener un segundo conjunto de reglas de compilador.",
+          "tourOrder": 6
+        }
+      ]
+    },
+    "src/supabase/client.ts": {
+      "overview": "Define el alias de cliente de Supabase que usan los adaptadores de storage y repositorio. Su única responsabilidad es desacoplar el kit del esquema generado por la aplicación consumidora. El paso 7 del recorrido lo presenta como la puerta de entrada flexible a la capa Supabase, con el coste de que la seguridad debe garantizarla la base de datos, no el tipado.",
+      "sections": [
+        {
+          "title": "Alias flexible de cliente",
+          "lineRange": [
+            1,
+            4
+          ],
+          "explanation": "El archivo importa `SupabaseClient` como tipo y exporta `AvatarSupabaseClient` como `SupabaseClient<any, any, any>`. Los tres `any` evitan fijar el esquema de base de datos, las relaciones o el tipo de auth de la app anfitriona. El comentario lo declara explícitamente: acepta cualquier esquema generado por el proyecto consumidor. Es una decisión deliberada de flexibilidad, pero traslada la garantía de permisos a RLS y a la RPC descritas en los pasos 7 y 8.",
+          "tourOrder": 7
+        }
+      ]
+    },
+    "src/supabase/storage.ts": {
+      "overview": "Adaptador de Storage del avatar privado y único módulo que conoce el bucket configurado. Expone una interfaz mínima con `upload`, `remove` y `sign`, y traduce cada error de Supabase a `AvatarKitError` con un código específico. El paso 7 del recorrido lo describe como la separación que permite al hook de React trabajar con imágenes privadas sin exponer los objetos ni conocer los detalles del bucket.",
+      "sections": [
+        {
+          "title": "Contrato del adaptador",
+          "lineRange": [
+            1,
+            10
+          ],
+          "explanation": "`AvatarStorage` reduce Storage a tres operaciones: subir, borrar y firmar una URL con un TTL. El comentario deja claro que este es el único sitio que conoce el bucket privado, de modo que el resto de la aplicación no pueda crear URLs públicas por accidente. La interfaz también facilita sustituir el adaptador en pruebas sin levantar Supabase.",
+          "tourOrder": 7
+        },
+        {
+          "title": "Fábrica y acceso al bucket",
+          "lineRange": [
+            12,
+            14
+          ],
+          "explanation": "`createSupabaseAvatarStorage` recibe el cliente flexible y la configuración validada, y define `bucket()` como una pequeña closure que devuelve `client.storage.from(config.bucket)`. Centralizar esa llamada evita repetir el nombre del bucket en los tres métodos. La fábrica devuelve un objeto literal que cumple la interfaz, sin clases ni estado adicional.",
+          "tourOrder": 7
+        },
+        {
+          "title": "Subida y borrado",
+          "lineRange": [
+            15,
+            28
+          ],
+          "explanation": "`upload` envía el archivo con su `contentType`, `cacheControl` de una hora y `upsert: false`; este último dato es importante porque las rutas incluyen un UUID único y nunca deben sobrescribirse. `remove` borra con un array de una sola ruta, tal como exige la API de Storage. Ambos métodos lanzan `UPLOAD_FAILED` o `REMOVE_FAILED` conservando el error original como `cause` y usando un mensaje en español por defecto.",
+          "tourOrder": 7
+        },
+        {
+          "title": "Firma de URL",
+          "lineRange": [
+            30,
+            35
+          ],
+          "explanation": "`sign` usa `createSignedUrl` con el TTL recibido como parámetro, que el hook de React podrá renovar antes de que expire. Ante error lanza `SIGN_FAILED`; si no hay error pero tampoco datos, devuelve `null` en lugar de una cadena vacía. Ese `null` encaja con el estado de 'sin avatar' que consumen los componentes.",
+          "tourOrder": 7
+        }
+      ]
+    },
+    "src/supabase/repository.ts": {
+      "overview": "Adaptador de la tabla de perfil que une los metadatos del avatar con los bytes privados gestionados por storage.ts. Resuelve el esquema según el tipo de propietario, lee la ruta con `.maybeSingle()` y delega la escritura en una RPC de Postgres que valida propiedad en servidor. El paso 8 del recorrido lo presenta como la otra mitad del ciclo: los metadatos autorizados frente a los archivos del bucket.",
+      "sections": [
+        {
+          "title": "Contrato del repositorio",
+          "lineRange": [
+            1,
+            10
+          ],
+          "explanation": "`AvatarRepository` expone solo `getPath` y `setPath`, sin filas completas de perfil. El comentario subraya que nunca expone org_id, pago, estado activo ni roles en la UI: el kit lee únicamente la columna de avatar que indique la configuración. El comentario de `setPath` aclara que `null` significa quitar la foto y que la RPC valida tanto la propiedad como la forma de la ruta.",
+          "tourOrder": 8
+        },
+        {
+          "title": "Selección de esquema",
+          "lineRange": [
+            12,
+            14
+          ],
+          "explanation": "La fábrica recibe el cliente y la configuración, y define `schemaFor` como un acceso directo a `config.schemas[owner.kind]`. Esta es la única decisión dependiente del rol: internal y member pueden apuntar a tablas distintas sin que el resto del código conozca los nombres. Los nombres de tabla y columna ya vienen validados desde config.ts.",
+          "tourOrder": 8
+        },
+        {
+          "title": "Lectura de la ruta",
+          "lineRange": [
+            15,
+            27
+          ],
+          "explanation": "`getPath` selecciona solo la columna de avatar y filtra por organización y dueño con dos `eq`. `.maybeSingle()` devuelve `null` cuando no hay fila, en lugar de lanzar un error, lo que encaja con un avatar todavía no subido. La lectura del valor se hace de forma defensiva: se comprueba que el campo sea `string` y en caso contrario se devuelve `null`. Cualquier error de consulta se convierte en `LOAD_FAILED` conservando la causa.",
+          "tourOrder": 8
+        },
+        {
+          "title": "Escritura vía RPC",
+          "lineRange": [
+            29,
+            41
+          ],
+          "explanation": "`setPath` llama a la RPC configurada con organization, kind, owner y la ruta (o `null`), en lugar de hacer un `UPDATE` directo sobre la tabla. Así la comprobación de propiedad ocurre en el servidor, donde el cliente no puede eludirla. El mapeo de errores distingue el código Postgres `42501` de permiso denegado y lo convierte en `FORBIDDEN`; cualquier otro fallo se reporta como `SAVE_FAILED`.",
+          "tourOrder": 8
+        }
+      ]
+    },
+    "scripts/render-sql.mts": {
+      "overview": "CLI que convierte un preset JSON en los tres archivos SQL del kit. Lee la configuración, la valida con `configFromJson`, renderiza las plantillas y escribe los resultados en un directorio `--out` o los imprime por stdout. Es el puente ejecutable entre el paso 4 (configuración) y el paso 9 del recorrido (renderizado parametrizado), y está escrita en `.mts` para poder usar top-level await.",
+      "sections": [
+        {
+          "title": "Imports y argumentos",
+          "lineRange": [
+            1,
+            11
+          ],
+          "explanation": "La CLI usa `node:fs/promises` para E/S asíncrona y reutiliza `configFromJson` y `renderSqlTemplates` en lugar de duplicar lógica. `argument` acepta dos sintaxis para cada opción: `--clave=valor` mediante `startsWith` y `--clave valor` buscando el índice en `process.argv`. Devuelve `undefined` si la opción no aparece, lo que permite aplicar defaults después.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Carga y validación",
+          "lineRange": [
+            13,
+            17
+          ],
+          "explanation": "`--config` por defecto apunta a `avatar-profile.config.json` en el directorio de trabajo; `--out` se deja opcional. El JSON se parsea como `unknown` y pasa por `configFromJson`, de modo que una configuración mal formada o con identificadores inseguros detiene la ejecución antes de generar SQL. El resultado de `renderSqlTemplates` es un mapa de nombre de plantilla a texto renderizado.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Salida a disco o stdout",
+          "lineRange": [
+            19,
+            29
+          ],
+          "explanation": "Si hay directorio de salida se crea con `mkdir(..., { recursive: true })` y cada archivo se escribe quitando el sufijo `.tpl`, con un mensaje `Escrito` por archivo. Si no, se imprimen los tres bloques de SQL precedidos de un comentario con su nombre, útil para redirigir la salida o inspeccionar sin escribir. En ambos casos se itera sobre `Object.entries(rendered)`, de modo que añadir una plantilla nueva no exige cambiar la CLI. La salida por stdout tiene el mismo formato que los archivos escritos, solo que precedido de un comentario con el nombre.",
+          "tourOrder": 9
+        }
+      ]
+    },
+    "sql/README.md": {
+      "overview": "Documentación operativa de las plantillas SQL: explica que no se aplican directamente, sino que se generan desde avatar-profile.config.json mediante el comando `sql:render`. Enumera los tres archivos resultantes y resume las reglas de seguridad que el renderizador y las migraciones aplican. El paso 9 del recorrido la usa para cerrar el flujo de renderizado antes de entrar en el detalle de las policies.",
+      "sections": [
+        {
+          "title": "Introducción y comando",
+          "lineRange": [
+            1,
+            7
+          ],
+          "explanation": "El documento advierte que los `*.sql.tpl` no se aplican directamente: son plantillas parametrizadas por la configuración. El ejemplo usa `npm.cmd run sql:render` con `--config` y `--out`, reflejando el entorno Windows del proyecto. Esta instrucción sitúa la CLI justo después de editar un preset, haciendo explícito que la config es la fuente de verdad.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Salidas generadas",
+          "lineRange": [
+            9,
+            15
+          ],
+          "explanation": "Una tabla resume los tres artefactos: 001 añade `avatar_path`, índices y triggers opcionales; 002 crea el bucket privado, helpers de pertenencia y propiedad y policies de `storage.objects`; 003 define la RPC `apk_set_avatar_path` como única escritura permitida. Este inventario coincide con la lista `TEMPLATE_FILES` de render.ts y con los nodos del paso 10 del recorrido.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Reglas de seguridad",
+          "lineRange": [
+            17,
+            23
+          ],
+          "explanation": "Las reglas recuerdan que los identificadores se validan en TypeScript y se escriben entre comillas dobles, y que los roles se validan antes de inyectarse como literales SQL. También explican el bypass de `master` en la policy de lectura (que evalúa `false` si `masterRole` es `null`) y que la subida reutiliza el helper de propiedad de la RPC para impedir escribir en la carpeta ajena. Las dos últimas reglas tratan el bucket propio frente a `connect-personnel` y las pruebas de aislamiento con PGlite en tests/permissions.test.ts.",
+          "tourOrder": 9
+        }
+      ]
+    },
+    "src/sql/render.ts": {
+      "overview": "Motor de renderizado parametrizado de las tres plantillas SQL. Convierte una `AvatarConfig` validada en un diccionario de valores seguros (tablas cualificadas, columnas entre comillas, arrays de roles, regex de ruta y fragmentos condicionales) y sustituye los marcadores `{{clave}}`. Detecta marcadores residuales para evitar que quede SQL sin resolver; es el núcleo del paso 9 y alimenta la CLI y las pruebas de permisos.",
+      "sections": [
+        {
+          "title": "Plantillas y utilidades",
+          "lineRange": [
+            1,
+            16
+          ],
+          "explanation": "`TEMPLATE_FILES` es la lista cerrada de las tres plantillas y `RenderedSql` deriva sus claves de esa tupla, de modo que el tipo y la realidad del directorio no se puedan desincronizar. `quoted` envuelve identificadores en comillas dobles y `literalArray` genera un `array[...]::text[]` de Postgres escapando comillas simples con `replaceAll`. Estas dos utilidades son el mecanismo concreto de interpolación segura.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Validación de roles",
+          "lineRange": [
+            18,
+            25
+          ],
+          "explanation": "`assertRole` exige que cada rol sea un identificador en minúsculas antes de inyectarlo como literal SQL. `buildTemplateValues` empieza revalidando la configuración con `assertSqlSafeConfig` y comprueba tanto `adminRoles` como el `masterRole` opcional. Repetir la validación aquí es deliberado: esta función puede llamarse directamente, no solo a través de la CLI.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Expresiones derivadas",
+          "lineRange": [
+            26,
+            54
+          ],
+          "explanation": "Esta zona calcula los fragmentos que dependen de decisiones de esquema. `memberOwnerExpression` es `auth.uid()` si el dueño miembro es el usuario autenticado, una subconsulta sobre `memberLink` si existe vínculo, o `null::uuid` como último recurso. `auditTriggers` se construye como texto solo cuando hay `auditFunction`, con `drop trigger if exists` previo para ser idempotente. Ambas decisiones muestran que la configuración no solo sustituye nombres, sino que cambia la forma del SQL generado.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Mapa de sustituciones",
+          "lineRange": [
+            55,
+            91
+          ],
+          "explanation": "El objeto devuelto contiene una entrada por marcador: bucket, prefijo, RPC, carpeta, tamaño, arrays de MIME y roles, regex de ruta y todas las tablas/columnas cualificadas. `ownerSegmentIndex` y `kindFromPathExpression` adaptan las policies al layout `owner` frente a `kind`, y `kindMismatchCondition` se desactiva con `false` en el primer caso. `createPrivateSchema` y `auditTriggers` son cadenas vacías cuando no aplican, una técnica sencilla para plantillas condicionales sin motor de plantillas externo.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Sustitución y detección",
+          "lineRange": [
+            93,
+            98
+          ],
+          "explanation": "`replacePlaceholders` usa una regex global sobre `{{clave}}` y deja el marcador original si la clave no existe en el mapa. Después vuelve a buscar todos los marcadores en el resultado: si queda alguno, lanza un error listándolos. Esta comprobación en dos pasadas evita que un typo en una plantilla llegue a producción como SQL inválido o, peor, como SQL con texto inesperado.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Renderizado de archivos",
+          "lineRange": [
+            100,
+            112
+          ],
+          "explanation": "`renderSqlTemplates` calcula los valores una sola vez y lee cada plantilla desde el directorio indicado. Por defecto usa `new URL('../../sql/', import.meta.url)` convertido con `fileURLToPath`, lo que hace que la ruta sea independiente del directorio de trabajo; el parámetro `sqlDir` permite sobreescribirla en pruebas. Devuelve un `RenderedSql` con el contenido ya sustituido, listo para la CLI o para PGlite.",
+          "tourOrder": 9
+        }
+      ]
+    },
+    "sql/001_columns.sql.tpl": {
+      "overview": "Primera de las tres plantillas SQL: prepara las tablas de perfil para almacenar la ruta del avatar y crear los índices de búsqueda. Incluye bloque transaccional y un hueco para triggers de auditoría opcionales generados desde la configuración. El paso 10 del recorrido la presenta como la base sobre la que luego se construyen el bucket, las policies y la RPC.",
+      "sections": [
+        {
+          "title": "Aviso y transacción",
+          "lineRange": [
+            1,
+            3
+          ],
+          "explanation": "Los dos comentarios iniciales indican que el archivo es generado y que no debe editarse: cualquier cambio ha de hacerse en avatar-profile.config.json y volverse a renderizar. `begin;` abre una transacción para que la migración sea atómica. Esta convención se repite en las otras plantillas y es la que permite aplicarlas sin dejar la base a medias.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Columnas e índices",
+          "lineRange": [
+            5,
+            11
+          ],
+          "explanation": "Se añade `avatar_path` de tipo `text` a ambas tablas con `add column if not exists`, patrón idempotente que permite reejecutar la migración. Los dos índices se crean con `if not exists` sobre la combinación organización/dueño, que es exactamente el filtro que usa `getPath` en repository.ts. Todos los nombres son marcadores `{{...}}` sustituidos por `render.ts` con identificadores previamente validados y entre comillas.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Triggers y cierre",
+          "lineRange": [
+            13,
+            15
+          ],
+          "explanation": "El marcador `{{auditTriggers}}` se sustituye por el fragmento de triggers generado cuando `sql.auditFunction` está configurado, o por una cadena vacía en caso contrario. Dejar la línea suelta con el marcador permite que la plantilla siga siendo legible sin condicionales en SQL. `commit;` cierra la transacción iniciada al principio.",
+          "tourOrder": 10
+        }
+      ]
+    },
+    "sql/002_bucket_and_policies.sql.tpl": {
+      "overview": "Segunda plantilla SQL del kit (paso 10 del recorrido): materializa el bucket privado de avatares, los helpers en el esquema `private` que resuelven pertenencia, roles y propiedad, y las cuatro políticas RLS sobre `storage.objects`. Todos los identificadores sensibles llegan como marcadores `{{...}}` validados por `render.ts`, de modo que el mismo archivo sirve a los presets `internal`/`member` y a distintos `pathLayout`. Junto con `003_rpc.sql.tpl` convierte la configuración del paso 4 en seguridad real de base de datos.",
+      "sections": [
+        {
+          "title": "Transacción y bucket privado",
+          "lineRange": [
+            1,
+            11
+          ],
+          "explanation": "La migración se envuelve en `begin`/`commit` para que el bucket y las políticas se apliquen de forma atómica. El marcador `{{createPrivateSchema}}` crea el esquema auxiliar y el `insert` registra el bucket con `public = false`, el límite de bytes y los MIME permitidos. El `on conflict (id) do update` hace la plantilla reejecutable: reconfigura un bucket existente sin fallar ni duplicarlo.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Helpers de pertenencia y roles",
+          "lineRange": [
+            13,
+            38
+          ],
+          "explanation": "`private.{{prefix}}_is_member` y `_has_role` consultan la tabla de vínculos con `auth.uid()`; el operador `&&` comprueba la intersección entre los roles del usuario y los esperados. `_is_master` añade una condición de guardia (`{{masterRolesArray}} <> array[]`) para que un preset sin roles de master no otorgue acceso por accidente. Las tres funciones son `stable`, `security definer` y con `search_path = ''`: leen datos con privilegios de la función sin resolver nombres desde el search_path del llamador.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Resolución del propietario",
+          "lineRange": [
+            40,
+            52
+          ],
+          "explanation": "Este helper traduce un `owner_kind` en el UUID real del dueño. Para `internal` busca la fila cuya columna de propietario coincide con `auth.uid()`; para `member` delega en el marcador `{{memberOwnerExpression}}`, que resuelve el vínculo usuario-miembro. El `else null` cierra la unión de tipos: un kind desconocido nunca puede escalar a un propietario válido. Es la pieza que permite al kit soportar dos dueños sin que la UI conozca la diferencia.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Validación y parseo de rutas",
+          "lineRange": [
+            54,
+            72
+          ],
+          "explanation": "Cuatro funciones `immutable` trabajan sobre el nombre del objeto de Storage. `_is_valid_path` aplica la regex generada desde el `pathLayout` (con o sin segmento de rol) y las demás sólo extraen segmentos si la ruta es válida, devolviendo `null` en caso contrario. `{{ownerSegmentIndex}}` es la adaptación a ambos layouts: el dueño está en un segmento u otro según el preset. Encapsular el parseo evita que cada política repita `split_part` y garantiza que una ruta inválida no autorice nada.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Autorización centralizada",
+          "lineRange": [
+            74,
+            88
+          ],
+          "explanation": "`_can_edit` es la única regla de negocio que consultan las políticas: exige pertenencia a la organización y luego acepta al dueño (con o sin segmento de rol), a los roles de administración y al master. El caso `p_owner_kind is null` cubre rutas del layout `owner`, donde el tipo no viaja en la ruta. Reunir aquí la decisión evita divergencias entre `select`, `insert`, `update` y `delete`.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Revocación y concesión EXECUTE",
+          "lineRange": [
+            90,
+            108
+          ],
+          "explanation": "Primero se revocan todos los privilegios a `public`, `anon` y `authenticated`, y después se concede sólo `execute` a `authenticated`. El patrón `revoke all` seguido de un grant explícito reduce la superficie de privilegios y hace que un cambio posterior en los defaults de Postgres no abra las helpers. Ninguna de estas funciones se expone al rol anónimo.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Política de lectura",
+          "lineRange": [
+            110,
+            124
+          ],
+          "explanation": "`_storage_read` permite `select` sólo dentro del bucket, con ruta válida, pertenencia a la organización extraída de la ruta y autorización de `_can_edit`. El añadido `_is_master` es un bypass explícito de lectura que no se repite en las políticas de escritura. La política se recrea con `drop policy if exists`, por lo que la migración es idempotente.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Políticas de inserción y actualización",
+          "lineRange": [
+            126,
+            156
+          ],
+          "explanation": "`_storage_insert` usa `with check` para validar la fila nueva, mientras que `_storage_update` combina `using` (qué filas se pueden tocar) y `with check` (qué valores se puede dejar). En `update` no se valida la ruta en `using` porque se evalúa sobre la fila anterior, pero sí en `with check` sobre la resultante. Las tres comprobaciones —bucket, ruta y propiedad— se repiten deliberadamente para que ninguna operación quede sin control.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Política de borrado y cierre",
+          "lineRange": [
+            158,
+            169
+          ],
+          "explanation": "`_storage_delete` autoriza borrar sólo lo que `_can_edit` permite, sin bypass de master. El `commit` final cierra la transacción iniciada en la línea 2. El resultado es un bucket privado donde la visibilidad de cada objeto depende de la ruta, no de listas de acceso explícitas.",
+          "tourOrder": 10
+        }
+      ]
+    },
+    "sql/003_rpc.sql.tpl": {
+      "overview": "Tercera plantilla SQL del kit y contrapartida de escritura del paso 10: define una única RPC (`{{rpcName}}`, por defecto `apk_set_avatar_path`) para persistir o limpiar `avatar_path`, de modo que el cliente nunca haga `update` directo sobre las tablas de perfil. Verifica autenticación, tipo de propietario, pertenencia, propiedad o roles y coherencia de la ruta antes de escribir. Es el mecanismo que el adaptador `repository.ts` invoca y que `permissions.test.ts` ejerce en el paso 11.",
+      "sections": [
+        {
+          "title": "Firma de la RPC",
+          "lineRange": [
+            1,
+            10
+          ],
+          "explanation": "La función recibe organización, tipo de propietario, id del dueño y la ruta a guardar (que admite `null` para quitar el avatar). Devuelve `void`: el cliente sólo necesita saber si la operación tuvo éxito. Como en la migración anterior, `security definer` con `search_path = ''` evita que un llamador manipule la resolución de nombres y permite que la RPC escriba en tablas protegidas por RLS.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Autenticación y pertenencia",
+          "lineRange": [
+            11,
+            20
+          ],
+          "explanation": "Primero se exige `auth.uid()` no nulo y después que `p_owner_kind` sea exactamente `internal` o `member`. A continuación `_is_member` comprueba que ese usuario pertenece a la organización indicada. Los errores usan códigos SQLSTATE (`42501` para permiso, `22023` para dato inválido), que es lo que `repository.ts` traduce a `FORBIDDEN`.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Comprobación de propiedad",
+          "lineRange": [
+            21,
+            27
+          ],
+          "explanation": "La condición acepta al propio dueño resuelto por `_owner_id`, a los roles de administración y al master. Es la misma lógica de `_can_edit` de la migración 002, pero aplicada a los parámetros en lugar de a una ruta. Si no se cumple, se lanza `No autorizado` antes de tocar ninguna tabla.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Validación de la ruta",
+          "lineRange": [
+            29,
+            36
+          ],
+          "explanation": "Cuando la ruta no es `null`, se exige que pase la regex del layout, que su organización y su dueño coincidan con los parámetros y que el tipo no contradiga lo esperado (`{{kindMismatchCondition}}`). El uso de `is distinct from` es importante: trata `null` como un valor comparable y evita que una comparación con `null` evalúe a desconocido y deje pasar la ruta. Así un usuario no puede guardar una ruta que apunte a la carpeta de otro.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Escritura y verificación",
+          "lineRange": [
+            38,
+            50
+          ],
+          "explanation": "La rama `internal` actualiza la tabla de cuentas internas y la rama `member` la de perfiles de miembros, siempre restringiendo por organización y dueño. `if not found` convierte una actualización sin filas en un error explícito `Perfil no disponible`, en lugar de devolver éxito silencioso. Es la única sentencia de escritura de todo el kit sobre esas tablas.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Permisos y cierre",
+          "lineRange": [
+            52,
+            57
+          ],
+          "explanation": "Tras el cuerpo `plpgsql`, se revoca todo a `public`, `anon` y `authenticated` y se concede `execute` únicamente a `authenticated`. El `commit` empareja el `begin` inicial. El rol anónimo queda por tanto sin lectura de Storage ni ejecución de la RPC, cosa que el test de permisos verifica.",
+          "tourOrder": 10
+        }
+      ]
+    },
+    "tests/permissions.test.ts": {
+      "overview": "Pruebas de integración del paso 11: levantan una base PostgreSQL embebida (PGlite) con un doble mínimo de los esquemas `auth`, `storage` y `private`, aplican el SQL renderizado desde la configuración y simulan cambios de usuario para comprobar qué objetos ve cada rol. Cubren los dos dueños (`internal` y `member`), el aislamiento entre organizaciones, el bypass de admin/master, el bloqueo de escrituras directas y la RPC. La segunda prueba repite el escenario con `pathLayout: owner` para demostrar que la seguridad no depende del formato de ruta.",
+      "sections": [
+        {
+          "title": "Utilidades de identificadores",
+          "lineRange": [
+            1,
+            9
+          ],
+          "explanation": "Los imports mezclan el runner `node:test`, PGlite y las dos APIs del kit que se están validando: `defineAvatarConfig` y `renderSqlTemplates`. `id` fabrica UUID deterministas legibles y `filePath` construye rutas con el fichero fijo `FILE`; así las aserciones pueden comparar rutas concretas sin depender de aleatoriedad.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Configuración bajo prueba",
+          "lineRange": [
+            11,
+            43
+          ],
+          "explanation": "El primer test define un preset con `masterRole`, `memberOwnerIsAuthUser: false` y los tres pares de tablas y columnas (internas, miembro y vínculo). `renderSqlTemplates` genera el SQL exacto que se ejecutará contra PGlite, de modo que la prueba ejercita también el renderizado del paso 9. Once UUIDs cubren organizaciones, dueños, roles y un outsider.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Doble simulado de Supabase",
+          "lineRange": [
+            45,
+            74
+          ],
+          "explanation": "Se crean los roles `anon`, `authenticated` y `service_role`, una tabla `auth.users` y una función `auth.uid()` que lee el claim JWT de `request.jwt.claim.sub`. El esquema `storage` incluye `buckets`, `objects` con RLS activado y los permisos necesarios. Las tablas de perfil se revocan al público y sólo se concede `select` a `authenticated`, condición indispensable para que el test de escritura directa tenga sentido.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Aplicación del SQL y siembra",
+          "lineRange": [
+            76,
+            97
+          ],
+          "explanation": "Cada archivo devuelto por `renderSqlTemplates` se ejecuta en orden, de modo que las policies y la RPC quedan instaladas antes de insertar datos. La siembra crea dos organizaciones, miembros de distintos roles, un par de cuentas internas, dos personas con sus perfiles y los vínculos usuario-miembro. Todo el bloque vive dentro de `try/finally` para cerrar la base incluso si una aserción falla.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Sesiones y rutas de prueba",
+          "lineRange": [
+            99,
+            116
+          ],
+          "explanation": "Se construyen cinco rutas representativas: propia y ajena interna, propia y ajena de miembro, y una de otra organización. `seed` inserta objetos como superusuario (`reset role`), `asUser` cambia el claim JWT y adopta el rol `authenticated`, y `visible` lee los nombres visibles. Este trío de helpers es la abstracción que hace legibles las aserciones de los subtests.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Lectura por rol",
+          "lineRange": [
+            118,
+            139
+          ],
+          "explanation": "El usuario interno ve su carpeta pero no la de otro usuario ni la de otra organización; el usuario miembro ve el avatar resuelto desde su vínculo, no el de otro miembro. Un tercer subtest comprueba que admin y master ven avatares ajenos por el bypass explícito de lectura. Estas aserciones son la ejecución directa de las policies de `002_bucket_and_policies.sql.tpl`.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Escritura directa y RPC",
+          "lineRange": [
+            141,
+            167
+          ],
+          "explanation": "Un `update` directo sobre `platform_usernames` se rechaza con `permission denied`, confirmando que la tabla sólo se expone en lectura. La RPC sí permite guardar la ruta propia y después limpiarla con `null`; cada cambio se verifica leyendo como superusuario. Es la demostración de por qué `repository.ts` delega la escritura en la RPC.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Rechazos de la RPC y miembros",
+          "lineRange": [
+            169,
+            196
+          ],
+          "explanation": "Se comprueban tres rechazos: dueño ajeno, organización ajena y extensión no permitida (`.gif`), con mensajes `No autorizado` y `Ruta de avatar inválida`. Después se verifica que un usuario vinculado puede guardar el avatar de su miembro vía RPC. El mensaje de error distingue falta de permiso de dato mal formado.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Subida en Storage y anónimo",
+          "lineRange": [
+            198,
+            222
+          ],
+          "explanation": "El último subtest confirma que `insert` en `storage.objects` pasa para la carpeta propia y falla para la de otro usuario (`row-level security`). Con el rol `anon` fallan tanto la lectura de objetos como la ejecución de la RPC. El `finally` cierra la conexión PGlite.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Variante pathLayout owner",
+          "lineRange": [
+            224,
+            323
+          ],
+          "explanation": "La segunda prueba usa otro bucket, `pathLayout: owner`, prefijo de policy propio y roles `admin`/`hr`, con rutas `<org>/<owner>/avatar/...` sin segmento de tipo. Repite el andamiaje de esquema y siembra, y verifica que el usuario sólo ve su carpeta y que la RPC acepta esa ruta pero rechaza una extensión inválida. Confirma que el mismo motor SQL respeta ambos layouts mediante `{{ownerSegmentIndex}}` y `{{kindFromPathExpression}}`.",
+          "tourOrder": 11
+        }
+      ]
+    },
+    "src/react/Avatar.tsx": {
+      "overview": "Componente presentacional del paso 12 que muestra el avatar con iniciales como respaldo y expone controles opcionales de carga y borrado. No depende de Supabase: la URL firmada se inyecta ya sea como `src` o mediante un callback `resolveUrl(path)` asíncrono. Las etiquetas se fusionan con `mergeLabels` y todas las clases CSS usan el prefijo `apk-` del paso 13.",
+      "sections": [
+        {
+          "title": "Contrato del componente",
+          "lineRange": [
+            1,
+            26
+          ],
+          "explanation": "La directiva `use client` lo habilita en componentes de Next.js del lado cliente. `AVATAR_ACCEPT` limita el selector de archivos a JPG, PNG y WebP, coherente con la validación del núcleo. `src` tiene prioridad sobre `path` y su valor `null` fuerza las iniciales, mientras que `resolveUrl` permite al llamador resolver una ruta privada sin acoplar el componente a Storage.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Resolución asíncrona de URL",
+          "lineRange": [
+            28,
+            50
+          ],
+          "explanation": "Este hook interno guarda `resolveUrl` en una ref y la actualiza en cada render para no capturar una closure obsoleta. El efecto usa un flag `cancelled` que se activa en la limpieza, de modo que una resolución tardía después del desmontaje o de un cambio de `path` no escriba estado. Si `src` está definido se usa directamente y no se llama al resolver; si no hay `path` ni resolver, se muestran las iniciales.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Estado y selección de archivo",
+          "lineRange": [
+            52,
+            74
+          ],
+          "explanation": "El componente mantiene una ref al `<input type=file>` para abrirlo desde el botón de edición. `handleChange` toma sólo el primer archivo y resetea `event.target.value = ''`, truco necesario para poder volver a elegir el mismo archivo dos veces. El callback `onUpload` se invoca sin bloquear el evento.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Imagen o iniciales",
+          "lineRange": [
+            76,
+            84
+          ],
+          "explanation": "El marco aplica `--apk-avatar-size` según `size` y muestra la imagen con `object-fit: cover` cuando hay URL. En su defecto, `getAvatarInitials(name)` del núcleo genera las iniciales y se marcan con `aria-hidden` porque el nombre accesible ya lo aporta el `alt` de la imagen. Es el fallback visual del paso 5 reutilizado en React.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Controles de edición",
+          "lineRange": [
+            85,
+            122
+          ],
+          "explanation": "Sólo cuando `editable` es verdadero se renderizan los botones de editar y, si existe `onRemove`, de quitar. Ambos usan `aria-label` y `title` tomados de las etiquetas fusionadas y se deshabilitan durante la subida. El `<input>` de archivo se oculta visualmente con CSS pero sigue siendo el control real, y su `accept` coincide con `AVATAR_ACCEPT`.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Estados de carga y error",
+          "lineRange": [
+            123,
+            127
+          ],
+          "explanation": "Durante `uploading` se muestra un indicador con `role=status`, y si hay `error` un párrafo con `role=alert` para que las tecnologías de asistencia lo anuncien. El componente es puramente controlado: todo el estado de la operación lo aporta `useAvatarEditor` o el llamador.",
+          "tourOrder": 12
+        }
+      ]
+    },
+    "src/react/labels.ts": {
+      "overview": "Centro único de los textos visibles del kit en el paso 12. Define la jerarquía de tipos `AvatarLabels` a `ProfileModalLabels`, proporciona los textos por defecto en español y ofrece `mergeLabels` para sobrescribir sólo las claves que la app anfitriona quiera traducir.",
+      "sections": [
+        {
+          "title": "Interfaces de etiquetas",
+          "lineRange": [
+            1,
+            17
+          ],
+          "explanation": "`AvatarLabels` agrupa las tres cadenas que necesita el componente `Avatar`. `ProfileModalLabels` la extiende con las acciones del diálogo —logout, cancelar, guardar— y con los cuatro textos de la confirmación de descarte más la instalación PWA. Heredar la interfaz evita repetir claves y garantiza que el modal y el avatar compartan vocabulario.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Valores por defecto",
+          "lineRange": [
+            19,
+            32
+          ],
+          "explanation": "El objeto `spanishLabels` fija todos los textos en español, incluida la frase completa de advertencia sobre cambios sin guardar. Al ser una constante tipada como `ProfileModalLabels`, TypeScript obliga a que no falte ninguna clave. Es la razón por la que el kit hereda el idioma sin configuración adicional.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Fusión parcial",
+          "lineRange": [
+            34,
+            36
+          ],
+          "explanation": "`mergeLabels` aplica el spread de los valores por defecto y después el de las sobrescrituras, así que un `Partial<ProfileModalLabels>` con una sola clave no borra el resto. El orden de los spreads es la clave de esta semántica. Se usa tanto en `Avatar` como en `ProfileModal` y en el botón PWA.",
+          "tourOrder": 12
+        }
+      ]
+    },
+    "src/react/useAvatar.ts": {
+      "overview": "Hook central del ciclo de vida del avatar en el paso 12. Combina el repositorio (metadatos), el storage (bytes privados y URLs firmadas) y las utilidades del núcleo para ofrecer carga, firma y renovación de URL, subida validada, borrado de temporales, guardado y descarte. Expone un único controlador con banderas `loading`, `uploading`, `saving` y `dirty` que `ProfileDialog.tsx` conecta a la UI.",
+      "sections": [
+        {
+          "title": "Contrato del hook",
+          "lineRange": [
+            1,
+            32
+          ],
+          "explanation": "Las opciones inyectan las tres dependencias —storage, repository y config— más el `owner` con el que se construyen las rutas. `initialPath` permite al llamador suministrar la ruta ya conocida y evitar la carga inicial. `AvatarEditorController` describe tanto el estado como las seis operaciones, de modo que el diálogo no necesita conocer la implementación.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Estado y refs sincronizadas",
+          "lineRange": [
+            34,
+            60
+          ],
+          "explanation": "Las dependencias y el `owner` se copian a refs en cada render para que los callbacks `useCallback` con array vacío sigan viendo los valores actuales. Se mantienen dos rutas separadas: `persistedPath` (lo que hay en la base) y `path` (lo que ve el usuario), cuya diferencia define `dirty`. `uploadedRef` registra los objetos subidos en esta sesión para poder limpiarlos, y `mountedRef` evita actualizar estado tras el desmontaje.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Carga desde el repositorio",
+          "lineRange": [
+            62,
+            80
+          ],
+          "explanation": "`reload` lee la ruta persistida, actualiza ambas rutas y limpia errores, con comprobaciones de `mountedRef` en cada rama. El efecto sólo la dispara cuando `initialPath` no se proporcionó y reacciona a cambios de organización, tipo o id del dueño. `errorMessage` convierte cualquier fallo en texto legible con un mensaje por defecto en español.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Firma de la URL",
+          "lineRange": [
+            82,
+            97
+          ],
+          "explanation": "Cuando hay `path`, se pide al storage una URL firmada con el TTL de la configuración. El efecto usa su propio flag `cancelled` además de `mountedRef`, para que una firma que llega tarde no sobrescriba la de una ruta más reciente. Si no hay ruta, se limpia `url` a `null` y se muestran las iniciales.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Renovación periódica",
+          "lineRange": [
+            99,
+            112
+          ],
+          "explanation": "Las URL firmadas caducan, así que un `setInterval` vuelve a firmar antes de que venza el TTL: el periodo es el 80 % del TTL con un mínimo de 30 segundos. Los fallos de renovación se ignoran con `catch(() => undefined)` para no ensuciar la UI con un error transitorio. El cleanup limpia el temporizador al cambiar de ruta o desmontar.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Subida validada",
+          "lineRange": [
+            114,
+            142
+          ],
+          "explanation": "Antes de subir, `validateAvatarFile` aplica MIME y tamaño del núcleo; si devuelve mensaje, se muestra y no se sube nada. `buildAvatarPath` genera la ruta con UUID, tipo MIME y configuración, y el storage sube los bytes. Sólo después de éxito se añade la ruta a `uploadedRef` y se actualiza `path`, por lo que la UI nunca muestra un avatar que no existe.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Borrado de temporales",
+          "lineRange": [
+            144,
+            156
+          ],
+          "explanation": "`remove` sólo elimina físicamente el objeto si estaba en `uploadedRef`, es decir, si se subió en esta sesión y aún no se guardó. Si la ruta venía del repositorio, basta con poner `path` a `null` y dejar que `save` borre el objeto anterior. Así se evita borrar un avatar ya persistido antes de confirmar el guardado.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Guardado",
+          "lineRange": [
+            158,
+            177
+          ],
+          "explanation": "Si no hay cambios (`path === persistedPath`), la operación es un no-op que devuelve `true`. La escritura se delega en `repository.setPath`, que a su vez llama a la RPC del paso 10. Después se elimina el objeto anterior, se vacía `uploadedRef` y se alinea `persistedPath` con `path`; si la RPC falla, se mantiene el estado previo y se muestra el error.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Descarte",
+          "lineRange": [
+            179,
+            188
+          ],
+          "explanation": "Recorre todas las rutas subidas en la sesión y las elimina del storage, ignorando fallos para que el descarte nunca se bloquee. Luego restaura `path` desde `persistedPath` y limpia el error. Es lo que llama `handleClose` en `ProfileDialog` cuando el usuario cancela.",
+          "tourOrder": 12
+        },
+        {
+          "title": "Controlador devuelto",
+          "lineRange": [
+            190,
+            204
+          ],
+          "explanation": "El objeto devuelto expone el estado derivado —incluido `dirty` calculado como comparación de rutas— junto con todas las operaciones. Es la interfaz que consumen `Avatar` y `ProfileDialog`, y mantiene la lógica de sincronización confinada en un solo hook.",
+          "tourOrder": 12
+        }
+      ]
+    },
+    "scripts/copy-assets.mjs": {
+      "overview": "Script de empaquetado del paso 13 que copia la hoja de estilos del kit al directorio de distribución. Es el pegamento entre `src/react/styles.css` y el entry point `./styles.css` declarado en `package.json`, de modo que la app consumidora recibe el CSS ya colocado sin importar archivos fuente.",
+      "sections": [
+        {
+          "title": "Importaciones de fs",
+          "lineRange": [
+            1,
+            2
+          ],
+          "explanation": "Usa la API de promesas de `node:fs/promises` dentro de un módulo `.mjs`, con `top-level await` disponible de forma nativa. Sólo necesita dos operaciones: crear el directorio y copiar el archivo.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Creación y copia",
+          "lineRange": [
+            3,
+            8
+          ],
+          "explanation": "Las rutas se construyen con `new URL(..., import.meta.url)` en lugar de `path.join`, lo que hace que el script funcione con independencia del directorio de ejecución. `mkdir` con `recursive: true` tolera que `dist/react` ya exista. La copia se confirma con un mensaje en consola.",
+          "tourOrder": 13
+        }
+      ]
+    },
+    "src/react/ProfileDialog.tsx": {
+      "overview": "Composición de alto nivel del paso 13: une `useAvatarEditor`, `Avatar` y `ProfileModal` en un único diálogo de perfil configurable. Recibe el `owner` y las dependencias inyectadas, calcula `dirty` y `saving` combinando el estado del avatar con campos extra de la app, y ofrece dos variantes —internal y member— que no hardcodean lógica de roles. Es el nodo con mayor fan-out de la capa React.",
+      "sections": [
+        {
+          "title": "Contrato del diálogo",
+          "lineRange": [
+            1,
+            25
+          ],
+          "explanation": "El tipo `Omit` excluye de `ProfileModalProps` las props que este componente va a calcular (`title`, `children`, `onClose`, `onSave`) y añade el `owner`, storage, repository y config necesarios para el hook. El comentario de `children` advierte de no pasar pago, estado activo ni `org_id`, coherente con la regla de no exponer columnas sensibles del paso 8. `extraDirty` permite que campos propios de la app participen en la confirmación de descarte.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Editor y callbacks",
+          "lineRange": [
+            27,
+            54
+          ],
+          "explanation": "`useAvatarEditor` se crea con las dependencias inyectadas; si se pasó `initialAvatarPath`, el hook evita la carga inicial. `handleClose` descarta los cambios temporales del avatar antes de cerrar, y `handleSave` no llama al `onSave` de la app si el guardado del avatar falló. Este orden garantiza que no se cierre el diálogo con un archivo temporal huérfano.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Renderizado compuesto",
+          "lineRange": [
+            56,
+            81
+          ],
+          "explanation": "El modal recibe `dirty` y `saving` como OR entre el estado del avatar y las props externas. El `Avatar` se usa en modo `src` controlado con la URL firmada del hook, `editable`, y recibe `uploading`, `error` y las etiquetas. Los `children` se insertan después del avatar para que la app añada sus propios campos sin que el kit conozca su esquema.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Variantes por tipo de cuenta",
+          "lineRange": [
+            84,
+            92
+          ],
+          "explanation": "`InternalProfileDialog` y `MemberProfileDialog` son envoltorios finos que sólo cambian el título por defecto. La lógica de permisos y de rutas ya vino resuelta en el `owner` y en la configuración, así que aquí no hay ramas por rol. Es la materialización del modelo de claves neutras descrito en el paso 1.",
+          "tourOrder": 13
+        }
+      ]
+    },
+    "src/react/ProfileModal.tsx": {
+      "overview": "Carcasa visual del diálogo en el paso 13: un bottom sheet en móvil con cabecera, cuerpo, footer y una confirmación superpuesta para cerrar o hacer logout con cambios sin guardar. Gestiona foco, tecla Escape y clic en el fondo, e incluye el botón de instalación PWA que se detalla en el paso 14. No conoce el avatar: recibe `children` y banderas `dirty` y `saving` ya calculadas.",
+      "sections": [
+        {
+          "title": "Props y acción pendiente",
+          "lineRange": [
+            1,
+            27
+          ],
+          "explanation": "Las props separan las acciones del modal (`onClose`, `onSave`, `onLogout`) de los datos, y `showInstall` permite ocultar el botón PWA. `PendingAction` es una unión cerrada de `close`, `logout` o `null` que modela exactamente las dos acciones que requieren confirmación. El comentario inicial documenta la decisión de diseño: logout arriba a la derecha y fuera del formulario.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Estado y accesibilidad",
+          "lineRange": [
+            28,
+            46
+          ],
+          "explanation": "`mergeLabels` aporta los textos por defecto; `pending` guarda la acción a confirmar y `bodyRef` permitirá enfocar el primer control. `useId` genera identificadores estables para enlazar el título y el diálogo de confirmación con sus `aria-labelledby`, evitando IDs duplicados si hay varios modales.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Acciones con confirmación",
+          "lineRange": [
+            47,
+            62
+          ],
+          "explanation": "`requestClose` y `requestLogout` ejecutan la acción directamente si no hay cambios y, si los hay, cambian `pending`. `confirmPending` lee la acción, limpia el estado y la ejecuta; al limpiar primero se evita un doble disparo. Ambas acciones son asíncronas y se invocan con `void`.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Restauración del foco",
+          "lineRange": [
+            64,
+            70
+          ],
+          "explanation": "Al abrir, se guarda el elemento activo y se enfoca el primer control interactivo del cuerpo. La función de limpieza devuelve el foco al elemento original al cerrar o desmontar. Es un requisito de accesibilidad que el prefijo `apk-` no cubre, por eso vive en el componente.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Tecla Escape",
+          "lineRange": [
+            72,
+            82
+          ],
+          "explanation": "El listener de `keydown` global ignora otras teclas, previene el comportamiento por defecto de Escape y, si hay una confirmación abierta, la cancela en lugar de cerrar el modal. El efecto se re-suscribe cuando cambian `open`, `pending` o `requestClose` y retira el listener al limpiar.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Estructura visible",
+          "lineRange": [
+            84,
+            109
+          ],
+          "explanation": "Si `open` es falso, el componente devuelve `null` y no ocupa el DOM. El overlay cierra al hacer `mousedown` directamente sobre el fondo, comprobando `event.target === event.currentTarget` para no reaccionar a clics en el contenido. La cabecera contiene el logout y el cuerpo aloja los `children` y el `PwaInstallButton`.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Footer de acciones",
+          "lineRange": [
+            111,
+            117
+          ],
+          "explanation": "Sólo Cancelar y Guardar, con `disabled` durante `saving`. El texto de guardado cambia a `copy.saving` para dar feedback. El logout queda deliberadamente fuera de este footer.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Confirmación de descarte",
+          "lineRange": [
+            118,
+            137
+          ],
+          "explanation": "Cuando `pending` no es `null`, se superpone un `alertdialog` con `aria-modal` dentro de la hoja, no en el document body, para que cubra visualmente el modal. Seguir editando sólo limpia `pending`; descartar confirma la acción. Los cuatro textos vienen de `mergeLabels`, así que la app puede traducirlos.",
+          "tourOrder": 13
+        }
+      ]
+    },
+    "src/react/styles.css": {
+      "overview": "Hoja de estilos del kit, copiada a `dist/react/styles.css` por el paso 13. Todos los selectores llevan el prefijo `apk-` para no colisionar con la app anfitriona y las custom properties `--apk-avatar-size` y `--apk-accent` permiten ajustar tamaño y color sin editar el archivo. Incluye objetivos táctiles de 44 px, foco visible, bottom sheet en móvil y respeto a `prefers-reduced-motion`.",
+      "sections": [
+        {
+          "title": "Variables y marco del avatar",
+          "lineRange": [
+            1,
+            44
+          ],
+          "explanation": "El comentario inicial explica el prefijo `apk-`. `.apk-avatar` define las custom properties y sus modificadores `--sm`, `--md` y `--lg` cambian sólo `--apk-avatar-size`. El marco es circular con `overflow: hidden` para recortar la imagen, y las iniciales escalan proporcionalmente con `calc()`.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Acciones y estados del avatar",
+          "lineRange": [
+            46,
+            94
+          ],
+          "explanation": "Los botones de editar y quitar se superponen al marco con un mínimo de 44 por 44 px para cumplir objetivos táctiles. El input de archivo se oculta con la técnica clip/1px en lugar de `display: none`, de modo que siga siendo enfocable por teclado; se activa desde el botón. `.apk-avatar__busy` y `__error` cubren los estados de subida y error.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Estructura del modal",
+          "lineRange": [
+            96,
+            130
+          ],
+          "explanation": "`.apk-modal` es un overlay fijo con `z-index: 1000`, y `.apk-modal__sheet` limita el ancho a 520 px y la altura a `100dvh - 32px` con scroll interno. La unidad `dvh` evita los problemas de la altura de viewport en navegadores móviles. El header separa el título de la acción de logout.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Logout y cuerpo accesible",
+          "lineRange": [
+            132,
+            172
+          ],
+          "explanation": "El botón de logout es rojo, de al menos 44 px y lleva un `outline` permanente para distinguirlo del formulario. Los campos del cuerpo usan `font-size: 16px` con un comentario explícito: por debajo de ese tamaño iOS aplica auto-zoom al enfocar. `.apk-modal__body` es la región con scroll táctil.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Avatar, instalación y botón PWA",
+          "lineRange": [
+            174,
+            188
+          ],
+          "explanation": "Estas reglas centran el avatar dentro del diálogo, separan el bloque de instalación y dan estilo al botón PWA con borde discontinuo para que se perciba como una acción opcional. El botón también respeta el mínimo de 44 px de altura.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Footer del modal",
+          "lineRange": [
+            190,
+            210
+          ],
+          "explanation": "El footer se alinea a la derecha y usa `env(safe-area-inset-bottom)` para no quedar bajo la barra del sistema en iPhone; `max(14px, ...)` conserva un padding mínimo. Los botones comparten altura y radio, con estados deshabilitados atenuados.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Confirmación de descarte",
+          "lineRange": [
+            212,
+            234
+          ],
+          "explanation": "El overlay de confirmación se posiciona de forma absoluta dentro de la hoja (`inset: 0`, `z-index: 1`) en lugar de cubrir toda la ventana. El cuadro se centra con `place-items: center` y los botones mantienen los 44 px. La acción de descartar es roja para reforzar que es destructiva.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Foco visible",
+          "lineRange": [
+            236,
+            241
+          ],
+          "explanation": "Un único bloque de `:focus-visible` cubre avatar, modal y confirmación con un contorno azul de 3 px. Usar `:focus-visible` en lugar de `:focus` evita el contorno en clics de ratón sin renunciar a la navegación por teclado.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Adaptación móvil",
+          "lineRange": [
+            243,
+            255
+          ],
+          "explanation": "Por debajo de 640 px el overlay alinea la hoja al fondo y la convierte en un bottom sheet de hasta `92dvh` con esquinas redondeadas arriba. El padding horizontal usa `max(16px, env(safe-area-inset-*))` para respetar los márgenes de seguridad. Es la contrapartida CSS del comentario de `ProfileModal.tsx`.",
+          "tourOrder": 13
+        },
+        {
+          "title": "Movimiento reducido",
+          "lineRange": [
+            257,
+            259
+          ],
+          "explanation": "La media query `prefers-reduced-motion: reduce` anula las transiciones de la hoja y de los botones del avatar. Es una última capa de accesibilidad que no depende de JavaScript.",
+          "tourOrder": 13
+        }
+      ]
+    },
+    "src/pwa/install.ts": {
+      "overview": "Utilidades sin framework del paso 14 para decidir cuándo mostrar la acción de instalar la PWA. Detecta el modo standalone con `matchMedia` y el flag de iOS, y suscribe `beforeinstallprompt` y `appinstalled` devolviendo una función de limpieza. `PwaInstall.tsx` y el botón embebido en `ProfileModal` se apoyan en estas dos funciones.",
+      "sections": [
+        {
+          "title": "Tipo del prompt",
+          "lineRange": [
+            1,
+            4
+          ],
+          "explanation": "`PwaInstallPrompt` modela el evento no estándar `beforeinstallprompt`: expone `prompt()` para mostrar el diálogo nativo y `userChoice` con el resultado. Declarar la interfaz en el kit evita depender de tipos de DOM que no incluyen este evento.",
+          "tourOrder": 14
+        },
+        {
+          "title": "Detección standalone",
+          "lineRange": [
+            6,
+            10
+          ],
+          "explanation": "Devuelve `false` si no hay `window`, lo que hace la función segura durante SSR. Combina la media query `(display-mode: standalone)` con el flag `navigator.standalone` que usa iOS Safari. El resultado permite ocultar el botón cuando la app ya está instalada.",
+          "tourOrder": 14
+        },
+        {
+          "title": "Suscripción a eventos",
+          "lineRange": [
+            12,
+            28
+          ],
+          "explanation": "`watchInstallPrompt` llama a `preventDefault()` sobre `beforeinstallprompt` para conservar el evento y poder invocar `prompt()` más tarde desde el botón. Registra también `appinstalled` para que la UI deje de ofrecer la instalación. La función devuelta retira ambos listeners y encaja directamente con el cleanup de un `useEffect`.",
+          "tourOrder": 14
+        }
+      ]
+    },
+    "src/pwa/manifest.template.webmanifest": {
+      "overview": "Plantilla del manifiesto PWA del paso 14. Define la identidad de la app mediante marcadores `__APP_NAME__`, `__APP_SHORT_NAME__`, `__START_URL__` y `__THEME_COLOR__`, y fija el comportamiento de instalación (`standalone`, orientación portrait, iconos maskable). La guía `src/pwa/README.md` explica cómo sustituir los marcadores y publicar el resultado.",
+      "sections": [
+        {
+          "title": "Identidad y visualización",
+          "lineRange": [
+            1,
+            9
+          ],
+          "explanation": "Los cuatro marcadores separan lo que depende de la app anfitriona de lo que el kit fija por defecto. `scope: '/'` y `display: 'standalone'` son los que habilitan la experiencia de aplicación instalada, y `orientation: 'portrait-primary'` adapta el comportamiento al uso móvil previsto. Los colores de fondo y tema completan la apariencia del splash.",
+          "tourOrder": 14
+        },
+        {
+          "title": "Iconos de instalación",
+          "lineRange": [
+            10,
+            14
+          ],
+          "explanation": "Se declaran iconos PNG de 192 y 512 px, los dos tamaños que los navegadores exigen para considerar instalable una PWA. `purpose: 'any maskable'` permite que el mismo archivo sirva como icono normal y como icono con máscara del sistema, siempre que el arte esté dentro del área segura.",
+          "tourOrder": 14
+        }
+      ]
+    },
+    "src/pwa/README.md": {
+      "overview": "Guía de integración PWA del kit, correspondiente al paso 14 del recorrido: explica qué debe publicar la aplicación anfitriona para que el botón `Instalar aplicación` pueda aparecer. No modifica `CONICA-RRHH`; solo documenta el manifiesto, un service worker mínimo y su registro condicional. Cierra el recorrido mostrando que el modal ya incluye el botón por defecto y cómo ocultarlo o traducirlo.",
+      "sections": [
+        {
+          "title": "Requisitos del navegador",
+          "lineRange": [
+            1,
+            3
+          ],
+          "explanation": "La introducción aclara que el módulo **no fuerza** la instalación: solo muestra la acción cuando el navegador dispara `beforeinstallprompt`. Por tanto, la app destino debe publicar por su cuenta un manifest y un service worker; el kit no añade nada a `CONICA-RRHH`. Esta acotación evita confundir la responsabilidad del componente con la configuración de la PWA anfitriona.",
+          "tourOrder": 14
+        },
+        {
+          "title": "Publicación del manifest",
+          "lineRange": [
+            5,
+            14
+          ],
+          "explanation": "Explica cómo copiar `manifest.template.webmanifest` a `public/manifest.webmanifest` y sustituir los marcadores `__APP_NAME__`, `__APP_SHORT_NAME__`, `__START_URL__`, `__THEME_COLOR__` y los iconos. El fragmento de `app/layout.tsx` muestra cómo declarar `metadata.manifest` y `appleWebApp` paraiOS. La frase 'cuando decidas integrarlo' subraya que el kit solo provee la plantilla y no altera el layout de la app anfitriona.",
+          "tourOrder": 14
+        },
+        {
+          "title": "Service worker mínimo",
+          "lineRange": [
+            16,
+            33
+          ],
+          "explanation": "Presenta un `sw.js` de ejemplo con un caché `app-shell-v1`: el evento `install` precarga `/` y `/offline`, `skipWaiting()` acelera la activación y `clients.claim()` toma el control de las páginas existentes. En `fetch` solo se interceptan peticiones GET y se aplica una estrategia network-first con `caches.match` como respaldo si falla la red. Es una implementación deliberadamente pequeña: suficiente para cumplir el requisito de service worker sin imponer una estrategia de caché completa.",
+          "tourOrder": 14
+        },
+        {
+          "title": "Registro del service worker",
+          "lineRange": [
+            35,
+            43
+          ],
+          "explanation": "Muestra el registro desde un componente cliente con `useEffect` de dependencias vacías, es decir, una sola vez al montar. La condición `NODE_ENV === \"production\" && \"serviceWorker\" in navigator` evita registrar en desarrollo y en navegadores sin soporte; `void` descarta explícitamente la promesa de `register`. Este patrón complementa el hook `watchInstallPrompt` del paso 14: sin service worker registrado, el navegador no emite el evento que habilita el botón.",
+          "tourOrder": 14
+        },
+        {
+          "title": "Uso dentro del modal",
+          "lineRange": [
+            45,
+            47
+          ],
+          "explanation": "Cierra la guía indicando que no hay que hacer nada en el modal: `ProfileModal` incluye `<PwaInstallButton />` por defecto. Para ocultarlo basta `showInstall={false}` y para traducirlo se sobrescribe `labels={{ installApp: \"...\" }}`. Esto conecta directamente la documentación con el componente `PwaInstall.tsx` y con el sistema de etiquetas parciales del paso 12.",
+          "tourOrder": 14
+        }
+      ]
+    },
+    "src/react/PwaInstall.tsx": {
+      "overview": "Capa React de la instalación PWA: expone el hook `usePwaInstall` y el botón `PwaInstallButton` que se integra en `ProfileModal` (paso 13) y se explica en el paso 14 del recorrido. El hook traduce los eventos del navegador gestionados por `src/pwa/install.ts` en un estado simple (`canInstall`, `install`) y el componente decide no renderizar nada cuando la instalación no está disponible. Las etiquetas se resuelven con `mergeLabels`, por lo que el texto hereda los valores por defecto en español y puede sobrescribirse parcialmente.",
+      "sections": [
+        {
+          "title": "Directiva y dependencias",
+          "lineRange": [
+            1,
+            5
+          ],
+          "explanation": "La directiva `\"use client\"` marca el archivo como componente cliente, necesario porque el hook usa estado y efectos del navegador. Se importan `useCallback`, `useEffect` y `useState`, además de `isStandaloneScreen` y `watchInstallPrompt` desde `../pwa/install.js`. La extensión `.js` explícita es el convención del paquete ESM para resolver correctamente con NodeNext y bundlers, y el tipo `PwaInstallPrompt` viaja con el valor del evento hasta el hook.",
+          "tourOrder": 14
+        },
+        {
+          "title": "Contrato del hook",
+          "lineRange": [
+            7,
+            10
+          ],
+          "explanation": "La interfaz `PwaInstallHook` define una superficie mínima para los consumidores: un booleano `canInstall` y un método `install()` que devuelve `Promise<boolean>`. Devolver un booleano en lugar de lanzar excepciones permite al llamador reaccionar al resultado sin manejar errores de forma obligatoria. Al ser una interfaz exportada, `ProfileModal` puede depender del contrato y no de los detalles del evento del navegador.",
+          "tourOrder": 14
+        },
+        {
+          "title": "Detección y suscripción",
+          "lineRange": [
+            12,
+            26
+          ],
+          "explanation": "El comentario resume la regla de negocio: `canInstall` debe ser falso si el navegador no ofrece el prompt o si la app ya está instalada. El efecto consulta `isStandaloneScreen()` al montar y se suscribe con `watchInstallPrompt`, guardando el evento en el estado `prompt`. La devolución del efecto es la función de limpieza devuelta por `watchInstallPrompt`: al producirse la instalación, el callback secundario vacía `prompt` y marca `standalone` en `true`, reflejando el nuevo estado sin esperar a un re-render externo.",
+          "tourOrder": 14
+        },
+        {
+          "title": "Aceptación y estado",
+          "lineRange": [
+            28,
+            36
+          ],
+          "explanation": "`install` está memorizado con `useCallback` y depende de `prompt`: si no hay evento disponible devuelve `false` de inmediato. Cuando existe, espera `prompt.userChoice`, limpia el evento con `setPrompt(null)` para impedir una segunda invocación y traduce `choice.outcome === \"accepted\"` a booleano. El valor devuelto combina ambas condiciones de entrada: `!standalone && prompt !== null`, de modo que la UI desaparece tanto antes de que el navegador anuncie la instalación como después de aceptarla.",
+          "tourOrder": 14
+        },
+        {
+          "title": "Botón condicional",
+          "lineRange": [
+            38,
+            47
+          ],
+          "explanation": "`PwaInstallButton` recibe etiquetas opcionales y las fusiona con `mergeLabels` para obtener el texto `installApp`. Si `canInstall` es falso, retorna `null`, evitando renderizar un control inútil o engañoso. El `<button>` usa la clase prefijada `apk-pwa__button`, coherente con el sistema de estilos del paso 13, y `onClick={() => void install()}` descarta la promesa porque el resultado ya se refleja al ocultarse el botón.",
+          "tourOrder": 14
+        }
+      ]
+    }
+  }
+}

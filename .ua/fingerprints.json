@@ -1,0 +1,1180 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "no-git-52697adf11af",
+  "generatedAt": "2026-11-25T06:28:44.022Z",
+  "files": {
+    ".ua/config.json": {
+      "filePath": ".ua/config.json",
+      "contentHash": "6ea1d73580bddb6e88aaa0d2e2a5d91780d3024217485af7e4c0d4eae2f041f8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    ".ua/tmp/scan-stderr.txt": {
+      "filePath": ".ua/tmp/scan-stderr.txt",
+      "contentHash": "6346e0c91fccde53c1f08d15e6bee918145817f4e4f111f9c3ce5cc4427b88f0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "ca66c0aeee835ce90f3a113fa136e027b169bdd9db997808d66569c55716b89f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 145,
+      "hasStructuralAnalysis": false
+    },
+    "avatar-profile.config.json": {
+      "filePath": "avatar-profile.config.json",
+      "contentHash": "c11fa528b3e84638eb902a97a7f756e80c65760fc51ca02667b514eba62b85c2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 51,
+      "hasStructuralAnalysis": false
+    },
+    "avatar-profile.connect-personnel.config.json": {
+      "filePath": "avatar-profile.connect-personnel.config.json",
+      "contentHash": "47c630e01cc2c2eaff992cf4511610e81112e6340fbad57ea6d0304bf3d6148f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 52,
+      "hasStructuralAnalysis": false
+    },
+    "package.json": {
+      "filePath": "package.json",
+      "contentHash": "0a92a5a010fee80427ff556db482e0efbea1c96da2e986a6953c23e0341924a5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 60,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/copy-assets.mjs": {
+      "filePath": "scripts/copy-assets.mjs",
+      "contentHash": "7f4023611e64c12d19a0a99780f4135b19c8512f73ace80b503cfd4fc96c4e10",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:fs/promises",
+          "specifiers": [
+            "copyFile",
+            "mkdir"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/render-sql.mts": {
+      "filePath": "scripts/render-sql.mts",
+      "contentHash": "b4cb8cb6804c506a714fd9f3e3f1f9e1940ab1f8c86c94b061ff6c258bf87787",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": false
+    },
+    "sql/001_columns.sql.tpl": {
+      "filePath": "sql/001_columns.sql.tpl",
+      "contentHash": "1e29333a381459cc0d717c2afcd441dfc7e2bf591f2f4bcfd093060fcf155235",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": false
+    },
+    "sql/002_bucket_and_policies.sql.tpl": {
+      "filePath": "sql/002_bucket_and_policies.sql.tpl",
+      "contentHash": "6719f1c85d6f12e02333982d470e8ba2f0d14a7bcc2249eff74f3b578af76a1a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 170,
+      "hasStructuralAnalysis": false
+    },
+    "sql/003_rpc.sql.tpl": {
+      "filePath": "sql/003_rpc.sql.tpl",
+      "contentHash": "8b8d54078bbc219b5c164745feb055d0e19ff58e5c248884fc3fedc703a077fa",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 58,
+      "hasStructuralAnalysis": false
+    },
+    "sql/README.md": {
+      "filePath": "sql/README.md",
+      "contentHash": "65b5138c02380642a41a3c125eea6fd31e4f3fd2a32fbd2d48b554d475fc05a8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": false
+    },
+    "src/core/config.ts": {
+      "filePath": "src/core/config.ts",
+      "contentHash": "1c04572325ef2a4c10110bc23f6e6b79be9feb9aee28ad94f2408353a05e7714",
+      "functions": [
+        {
+          "name": "assertIdentifier",
+          "params": [
+            "value",
+            "label"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "qualifiedTable",
+          "params": [
+            "table",
+            "label"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "defineAvatarConfig",
+          "params": [
+            "input"
+          ],
+          "returnType": "AvatarConfig",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "assertSqlSafeConfig",
+          "params": [
+            "config"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "configFromJson",
+          "params": [
+            "value"
+          ],
+          "returnType": "AvatarConfig",
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "AvatarColumnConfig",
+            "AvatarConfig",
+            "AvatarMime",
+            "AvatarSqlConfig"
+          ]
+        },
+        {
+          "source": "./validation.js",
+          "specifiers": [
+            "DEFAULT_ALLOWED_MIMES",
+            "DEFAULT_MAX_AVATAR_BYTES"
+          ]
+        },
+        {
+          "source": "./path.js",
+          "specifiers": [
+            "avatarPathRegex"
+          ]
+        }
+      ],
+      "exports": [
+        "DEFAULT_CONFIG",
+        "assertIdentifier",
+        "qualifiedTable",
+        "defineAvatarConfig",
+        "assertSqlSafeConfig",
+        "configFromJson"
+      ],
+      "totalLines": 146,
+      "hasStructuralAnalysis": true
+    },
+    "src/core/errors.ts": {
+      "filePath": "src/core/errors.ts",
+      "contentHash": "ba37628ffbdbe8b37f387a018d4abe0f74a711f2614243037bb6711bbb3d53cb",
+      "functions": [
+        {
+          "name": "errorMessage",
+          "params": [
+            "error",
+            "fallback"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [
+        {
+          "name": "AvatarKitError",
+          "methods": [
+            "constructor"
+          ],
+          "properties": [
+            "code"
+          ],
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "AvatarKitError",
+        "errorMessage"
+      ],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "src/core/index.ts": {
+      "filePath": "src/core/index.ts",
+      "contentHash": "395dc6deb51313931f799b65b8b25ffcd52b1309d93c127e5c940d5aa12a7a68",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "src/core/path.ts": {
+      "filePath": "src/core/path.ts",
+      "contentHash": "aede1eaf2fe700f6c3a2fdf8a012b4b0e7b7ccd413ce164c38901a03cec1a214",
+      "functions": [
+        {
+          "name": "buildAvatarPath",
+          "params": [
+            "input",
+            "config"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "parseAvatarPath",
+          "params": [
+            "path"
+          ],
+          "returnType": "AvatarPathParts | null",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "isAvatarPath",
+          "params": [
+            "path",
+            "config"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "avatarPathRegex",
+          "params": [
+            "config"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "getAvatarInitials",
+          "params": [
+            "name"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "AvatarConfig",
+            "AvatarOwnerKind",
+            "AvatarPathParts"
+          ]
+        },
+        {
+          "source": "./validation.js",
+          "specifiers": [
+            "DEFAULT_ALLOWED_MIMES"
+          ]
+        }
+      ],
+      "exports": [
+        "buildAvatarPath",
+        "parseAvatarPath",
+        "isAvatarPath",
+        "avatarPathRegex",
+        "getAvatarInitials"
+      ],
+      "totalLines": 97,
+      "hasStructuralAnalysis": true
+    },
+    "src/core/types.ts": {
+      "filePath": "src/core/types.ts",
+      "contentHash": "7305da131762635c606956766701aef5e729ba42214eff14196d3bd376c1605c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "AVATAR_OWNER_KINDS"
+      ],
+      "totalLines": 87,
+      "hasStructuralAnalysis": true
+    },
+    "src/core/validation.ts": {
+      "filePath": "src/core/validation.ts",
+      "contentHash": "f791ed4fec0e2a46aad29ff5c1721602a4acf73b150f3cfc5db4cf2bb09caeca",
+      "functions": [
+        {
+          "name": "isAllowedAvatarMime",
+          "params": [
+            "mimeType",
+            "config"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "avatarExtension",
+          "params": [
+            "mimeType",
+            "config"
+          ],
+          "returnType": "string | null",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "validateAvatarFile",
+          "params": [
+            "file",
+            "config"
+          ],
+          "returnType": "string | null",
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "AvatarConfig",
+            "AvatarMime"
+          ]
+        }
+      ],
+      "exports": [
+        "DEFAULT_MAX_AVATAR_BYTES",
+        "DEFAULT_ALLOWED_MIMES",
+        "isAllowedAvatarMime",
+        "avatarExtension",
+        "validateAvatarFile"
+      ],
+      "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "src/pwa/README.md": {
+      "filePath": "src/pwa/README.md",
+      "contentHash": "d40a2405f32068367b7c00bcd7af902cf4ccd31716ad4d9d1c56e3599625ffa1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 48,
+      "hasStructuralAnalysis": false
+    },
+    "src/pwa/install.ts": {
+      "filePath": "src/pwa/install.ts",
+      "contentHash": "95316a9d8b95c209d56c6e9be86b071f94cdd3c53d36848f6a211f0095db761c",
+      "functions": [
+        {
+          "name": "isStandaloneScreen",
+          "params": [],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "watchInstallPrompt",
+          "params": [
+            "onAvailable",
+            "onInstalled"
+          ],
+          "returnType": "() => void",
+          "exported": true,
+          "lineCount": 16
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "isStandaloneScreen",
+        "watchInstallPrompt"
+      ],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "src/pwa/manifest.template.webmanifest": {
+      "filePath": "src/pwa/manifest.template.webmanifest",
+      "contentHash": "25623cfad88f0dc63ebe1ef376b19a804e8ea7e2cb93841154bf7f55e26c204d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": false
+    },
+    "src/react/Avatar.tsx": {
+      "filePath": "src/react/Avatar.tsx",
+      "contentHash": "0e553dcf3606896bc04fe9c2ed2e2a9868211e389e23792847935036ab321711",
+      "functions": [
+        {
+          "name": "useResolvedSrc",
+          "params": [
+            "path",
+            "src",
+            "resolveUrl"
+          ],
+          "exported": false,
+          "lineCount": 23
+        },
+        {
+          "name": "Avatar",
+          "params": [
+            "{\n  name,\n  path = null,\n  src,\n  resolveUrl,\n  size = \"md\",\n  editable = false,\n  uploading = false,\n  error = null,\n  labels,\n  onUpload,\n  onRemove,\n}"
+          ],
+          "exported": true,
+          "lineCount": 75
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useRef",
+            "useState"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "ChangeEvent"
+          ]
+        },
+        {
+          "source": "../core/path.js",
+          "specifiers": [
+            "getAvatarInitials"
+          ]
+        },
+        {
+          "source": "./labels.js",
+          "specifiers": [
+            "mergeLabels",
+            "ProfileModalLabels"
+          ]
+        }
+      ],
+      "exports": [
+        "AVATAR_ACCEPT",
+        "Avatar"
+      ],
+      "totalLines": 128,
+      "hasStructuralAnalysis": true
+    },
+    "src/react/ProfileDialog.tsx": {
+      "filePath": "src/react/ProfileDialog.tsx",
+      "contentHash": "8b4b7650a7fec080d6bad01372864eea88543689f66056f476d9fac946861c1c",
+      "functions": [
+        {
+          "name": "ProfileDialog",
+          "params": [
+            "{\n  owner,\n  storage,\n  repository,\n  config,\n  title = \"Mi perfil\",\n  initialAvatarPath,\n  avatarSize = \"lg\",\n  children,\n  extraDirty = false,\n  onClose,\n  onSave,\n  labels,\n  ...modalProps\n}"
+          ],
+          "exported": true,
+          "lineCount": 55
+        },
+        {
+          "name": "InternalProfileDialog",
+          "params": [
+            "props"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "MemberProfileDialog",
+          "params": [
+            "props"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "../core/types.js",
+          "specifiers": [
+            "AvatarConfig",
+            "AvatarOwner"
+          ]
+        },
+        {
+          "source": "../supabase/repository.js",
+          "specifiers": [
+            "AvatarRepository"
+          ]
+        },
+        {
+          "source": "../supabase/storage.js",
+          "specifiers": [
+            "AvatarStorage"
+          ]
+        },
+        {
+          "source": "./Avatar.js",
+          "specifiers": [
+            "Avatar",
+            "AvatarSize"
+          ]
+        },
+        {
+          "source": "./ProfileModal.js",
+          "specifiers": [
+            "ProfileModal",
+            "ProfileModalProps"
+          ]
+        },
+        {
+          "source": "./useAvatar.js",
+          "specifiers": [
+            "useAvatarEditor"
+          ]
+        }
+      ],
+      "exports": [
+        "ProfileDialog",
+        "InternalProfileDialog",
+        "MemberProfileDialog"
+      ],
+      "totalLines": 93,
+      "hasStructuralAnalysis": true
+    },
+    "src/react/ProfileModal.tsx": {
+      "filePath": "src/react/ProfileModal.tsx",
+      "contentHash": "fb1f2fae55a9fa17e5eec962d37f5d3da5ba76cfa372a420f154d665df7fd3f6",
+      "functions": [
+        {
+          "name": "ProfileModal",
+          "params": [
+            "{\n  open,\n  title,\n  subtitle,\n  children,\n  dirty = false,\n  saving = false,\n  onClose,\n  onSave,\n  onLogout,\n  showInstall = true,\n  labels,\n}"
+          ],
+          "exported": true,
+          "lineCount": 110
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useCallback",
+            "useEffect",
+            "useId",
+            "useRef",
+            "useState"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "./labels.js",
+          "specifiers": [
+            "mergeLabels",
+            "ProfileModalLabels"
+          ]
+        },
+        {
+          "source": "./PwaInstall.js",
+          "specifiers": [
+            "PwaInstallButton"
+          ]
+        }
+      ],
+      "exports": [
+        "ProfileModal"
+      ],
+      "totalLines": 138,
+      "hasStructuralAnalysis": true
+    },
+    "src/react/PwaInstall.tsx": {
+      "filePath": "src/react/PwaInstall.tsx",
+      "contentHash": "2eaa02878b322387e6b97c9a3f2b4e7b9961d6456656f1015aa6e04392616b60",
+      "functions": [
+        {
+          "name": "usePwaInstall",
+          "params": [],
+          "returnType": "PwaInstallHook",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "PwaInstallButton",
+          "params": [
+            "{ labels }"
+          ],
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useCallback",
+            "useEffect",
+            "useState"
+          ]
+        },
+        {
+          "source": "../pwa/install.js",
+          "specifiers": [
+            "isStandaloneScreen",
+            "watchInstallPrompt",
+            "PwaInstallPrompt"
+          ]
+        },
+        {
+          "source": "./labels.js",
+          "specifiers": [
+            "mergeLabels",
+            "ProfileModalLabels"
+          ]
+        }
+      ],
+      "exports": [
+        "usePwaInstall",
+        "PwaInstallButton"
+      ],
+      "totalLines": 48,
+      "hasStructuralAnalysis": true
+    },
+    "src/react/index.ts": {
+      "filePath": "src/react/index.ts",
+      "contentHash": "cb8ea26eef48dddae25b88bfe163ee5e23484e9dd39d6675a483448bf9dd6306",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "src/react/labels.ts": {
+      "filePath": "src/react/labels.ts",
+      "contentHash": "95b7d94a468681daa8d8eef49e132e3f1e72c9df39bd8d397423309e83bad200",
+      "functions": [
+        {
+          "name": "mergeLabels",
+          "params": [
+            "labels"
+          ],
+          "returnType": "ProfileModalLabels",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "spanishLabels",
+        "mergeLabels"
+      ],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    "src/react/styles.css": {
+      "filePath": "src/react/styles.css",
+      "contentHash": "13620dda105d77fe6cdd482e08a183e87230e0a39c5d5cba1279a9d1b055e8d8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 260,
+      "hasStructuralAnalysis": false
+    },
+    "src/react/useAvatar.ts": {
+      "filePath": "src/react/useAvatar.ts",
+      "contentHash": "1d50d0571ef96968ce15603c939d7cefd536887f8dbd25ad78b6808908dec750",
+      "functions": [
+        {
+          "name": "useAvatarEditor",
+          "params": [
+            "options"
+          ],
+          "returnType": "AvatarEditorController",
+          "exported": true,
+          "lineCount": 171
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useCallback",
+            "useEffect",
+            "useRef",
+            "useState"
+          ]
+        },
+        {
+          "source": "../core/types.js",
+          "specifiers": [
+            "AvatarConfig",
+            "AvatarOwner"
+          ]
+        },
+        {
+          "source": "../core/errors.js",
+          "specifiers": [
+            "errorMessage"
+          ]
+        },
+        {
+          "source": "../core/index.js",
+          "specifiers": [
+            "buildAvatarPath",
+            "validateAvatarFile"
+          ]
+        },
+        {
+          "source": "../supabase/repository.js",
+          "specifiers": [
+            "AvatarRepository"
+          ]
+        },
+        {
+          "source": "../supabase/storage.js",
+          "specifiers": [
+            "AvatarStorage"
+          ]
+        }
+      ],
+      "exports": [
+        "useAvatarEditor"
+      ],
+      "totalLines": 205,
+      "hasStructuralAnalysis": true
+    },
+    "src/sql/render.ts": {
+      "filePath": "src/sql/render.ts",
+      "contentHash": "b5795b7e0ef95fd7b3cc390d89f66f3fb8b99acab812bebdc41ef4ec643e479a",
+      "functions": [
+        {
+          "name": "quoted",
+          "params": [
+            "identifier"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "literalArray",
+          "params": [
+            "values"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "assertRole",
+          "params": [
+            "value"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "buildTemplateValues",
+          "params": [
+            "config"
+          ],
+          "returnType": "Record<string, string>",
+          "exported": true,
+          "lineCount": 69
+        },
+        {
+          "name": "replacePlaceholders",
+          "params": [
+            "template",
+            "values"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "renderSqlTemplates",
+          "params": [
+            "config",
+            "sqlDir"
+          ],
+          "returnType": "Promise<RenderedSql>",
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:fs/promises",
+          "specifiers": [
+            "readFile"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        },
+        {
+          "source": "../core/types.js",
+          "specifiers": [
+            "AvatarConfig"
+          ]
+        },
+        {
+          "source": "../core/config.js",
+          "specifiers": [
+            "assertSqlSafeConfig",
+            "qualifiedTable"
+          ]
+        },
+        {
+          "source": "../core/path.js",
+          "specifiers": [
+            "avatarPathRegex"
+          ]
+        }
+      ],
+      "exports": [
+        "buildTemplateValues",
+        "renderSqlTemplates"
+      ],
+      "totalLines": 113,
+      "hasStructuralAnalysis": true
+    },
+    "src/supabase/client.ts": {
+      "filePath": "src/supabase/client.ts",
+      "contentHash": "5efbb96b9a7c08c26e1300172058b5c1ff1a2ae6a6ea3263b8df8b6bf2b5815c",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@supabase/supabase-js",
+          "specifiers": [
+            "SupabaseClient"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "src/supabase/index.ts": {
+      "filePath": "src/supabase/index.ts",
+      "contentHash": "a6e8e8ece77f6816acd31455c04e1c8f577535fed09aba9c4a18211792161ed5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "src/supabase/repository.ts": {
+      "filePath": "src/supabase/repository.ts",
+      "contentHash": "2d989184b5982abe6d28cb1a2d1707a8eb3b2e82e140a16a793b5644d59c69ea",
+      "functions": [
+        {
+          "name": "createSupabaseAvatarRepository",
+          "params": [
+            "client",
+            "config"
+          ],
+          "returnType": "AvatarRepository",
+          "exported": true,
+          "lineCount": 31
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../core/types.js",
+          "specifiers": [
+            "AvatarConfig",
+            "AvatarOwner"
+          ]
+        },
+        {
+          "source": "../core/errors.js",
+          "specifiers": [
+            "AvatarKitError"
+          ]
+        },
+        {
+          "source": "./client.js",
+          "specifiers": [
+            "AvatarSupabaseClient"
+          ]
+        }
+      ],
+      "exports": [
+        "createSupabaseAvatarRepository"
+      ],
+      "totalLines": 43,
+      "hasStructuralAnalysis": true
+    },
+    "src/supabase/storage.ts": {
+      "filePath": "src/supabase/storage.ts",
+      "contentHash": "ca9a6b728b40c6a6dded238da91a218989072aa17e2962d7cbb43a09db6c96bd",
+      "functions": [
+        {
+          "name": "createSupabaseAvatarStorage",
+          "params": [
+            "client",
+            "config"
+          ],
+          "returnType": "AvatarStorage",
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../core/types.js",
+          "specifiers": [
+            "AvatarConfig"
+          ]
+        },
+        {
+          "source": "../core/errors.js",
+          "specifiers": [
+            "AvatarKitError"
+          ]
+        },
+        {
+          "source": "./client.js",
+          "specifiers": [
+            "AvatarSupabaseClient"
+          ]
+        }
+      ],
+      "exports": [
+        "createSupabaseAvatarStorage"
+      ],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    "tests/core.test.ts": {
+      "filePath": "tests/core.test.ts",
+      "contentHash": "71ee8bf8711fe41a0cc506a1d13bb973b4a5996c4c4e409a0b0716eaa3d042de",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "../src/core/config.js",
+          "specifiers": [
+            "defineAvatarConfig",
+            "configFromJson"
+          ]
+        },
+        {
+          "source": "../src/core/path.js",
+          "specifiers": [
+            "avatarPathRegex",
+            "buildAvatarPath",
+            "getAvatarInitials",
+            "isAvatarPath",
+            "parseAvatarPath"
+          ]
+        },
+        {
+          "source": "../src/core/validation.js",
+          "specifiers": [
+            "validateAvatarFile"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "tests/permissions.test.ts": {
+      "filePath": "tests/permissions.test.ts",
+      "contentHash": "ec404f79795ed42ecbaf63328cbdb6e3018314b58f65bb2c0454d681e9e91602",
+      "functions": [
+        {
+          "name": "id",
+          "params": [
+            "n"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "filePath",
+          "params": [
+            "org",
+            "kind",
+            "owner"
+          ],
+          "exported": false,
+          "lineCount": 1
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "@electric-sql/pglite",
+          "specifiers": [
+            "PGlite"
+          ]
+        },
+        {
+          "source": "../src/core/config.js",
+          "specifiers": [
+            "defineAvatarConfig"
+          ]
+        },
+        {
+          "source": "../src/sql/render.js",
+          "specifiers": [
+            "renderSqlTemplates"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 324,
+      "hasStructuralAnalysis": true
+    },
+    "tsconfig.json": {
+      "filePath": "tsconfig.json",
+      "contentHash": "583583c54871ca9e299079149e8826036871dbc0dae8ed0d228d90f807f3b29c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": false
+    },
+    "tsconfig.test.json": {
+      "filePath": "tsconfig.test.json",
+      "contentHash": "e21e149c2f47527d65cb32de5707c37a31031d876725e155ba2af28d99aab11a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "visual-poster.html": {
+      "filePath": "visual-poster.html",
+      "contentHash": "98bc0c5d2710a445e433c126a11e62208187bcff3eacf32c7e5fd7d4155c1f29",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 121,
+      "hasStructuralAnalysis": false
+    },
+    "visual-resumen.html": {
+      "filePath": "visual-resumen.html",
+      "contentHash": "5dafa65681051f0b16b4aa77694941bec70848fb370a4006f1a4da20bdd52418",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 253,
+      "hasStructuralAnalysis": false
+    }
+  }
+}

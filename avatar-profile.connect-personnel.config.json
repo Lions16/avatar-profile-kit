@@ -1,0 +1,51 @@
+{
+  "bucket": "connect-personnel",
+  "pathLayout": "owner",
+  "pathFolder": "avatar",
+  "signedUrlTtlSeconds": 300,
+  "maxBytes": 2097152,
+  "allowedMimeTypes": [
+    { "mime": "image/jpeg", "extension": "jpg" },
+    { "mime": "image/png", "extension": "png" },
+    { "mime": "image/webp", "extension": "webp" }
+  ],
+  "rpcSetAvatarPath": "apk_set_avatar_path",
+  "policyPrefix": "apk_avatar_personnel",
+  "adminRoles": ["admin", "hr"],
+  "masterRole": null,
+  "memberOwnerIsAuthUser": false,
+  "schemas": {
+    "internal": {
+      "table": "public.platform_usernames",
+      "organizationColumn": "organization_id",
+      "ownerColumn": "auth_user_id",
+      "avatarColumn": "avatar_path",
+      "nameColumn": "display_name"
+    },
+    "member": {
+      "table": "public.employee_profiles",
+      "organizationColumn": "organization_id",
+      "ownerColumn": "employee_id",
+      "avatarColumn": "avatar_path",
+      "nameColumn": "display_name"
+    }
+  },
+  "membership": {
+    "table": "public.memberships",
+    "organizationColumn": "organization_id",
+    "userColumn": "user_id",
+    "rolesColumn": "roles",
+    "activeColumn": "active"
+  },
+  "memberLink": {
+    "table": "public.user_employee_links",
+    "organizationColumn": "organization_id",
+    "userColumn": "user_id",
+    "memberColumn": "employee_id",
+    "activeColumn": "active"
+  },
+  "sql": {
+    "createPrivateSchema": true,
+    "auditFunction": "private.record_audit"
+  }
+}

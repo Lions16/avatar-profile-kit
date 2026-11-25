@@ -1,0 +1,87 @@
+{
+  "name": "avatar-profile-kit",
+  "version": "0.1.0",
+  "description": "Módulo reutilizable de avatares privados, diálogo de perfil y logout para Next.js + Supabase",
+  "type": "module",
+  "license": "MIT",
+  "main": "./dist/core/index.js",
+  "types": "./dist/core/index.d.ts",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "avatar",
+    "supabase",
+    "react",
+    "nextjs",
+    "storage",
+    "privacidad"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/core/index.d.ts",
+      "default": "./dist/core/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "default": "./dist/react/index.js"
+    },
+    "./supabase": {
+      "types": "./dist/supabase/index.d.ts",
+      "default": "./dist/supabase/index.js"
+    },
+    "./pwa": {
+      "types": "./dist/pwa/install.d.ts",
+      "default": "./dist/pwa/install.js"
+    },
+    "./sql-render": {
+      "types": "./dist/sql/render.d.ts",
+      "default": "./dist/sql/render.js"
+    },
+    "./styles.css": "./dist/react/styles.css",
+    "./pwa/manifest.webmanifest": "./assets/pwa/manifest.webmanifest",
+    "./pwa/sw.js": "./assets/pwa/sw.js"
+  },
+  "files": [
+    "dist",
+    "sql",
+    "assets",
+    "avatar-profile.config.json",
+    "avatar-profile.connect-personnel.config.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test": "tsx --test tests/*.test.ts",
+    "build": "tsc -p tsconfig.json && node scripts/copy-assets.mjs",
+    "prepare": "npm run build",
+    "dev:watch": "tsc -p tsconfig.json --watch",
+    "sql:render": "tsx scripts/render-sql.mts",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": ">=2",
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "@supabase/supabase-js": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.3.0",
+    "@supabase/supabase-js": "^2.119.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.9.0"
+  }
+}
